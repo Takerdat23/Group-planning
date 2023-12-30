@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { WebView } from 'react-native-webview';
 import * as FileSystem from 'expo-file-system';
 import { StatusBar } from 'expo-status-bar';
-import LoginScreen from './src/components/login_screen.js';
+import LoginScreen from './src/components/login_screen2.js';
 import HelloWorldScreen from './src/components/helloworldscreen'; 
 import WelcomeScreen from './src/components/welcomescreen.js'
 import { NavigationContainer } from '@react-navigation/native';
@@ -35,6 +35,7 @@ const App = () => {
           name="Login" 
           component={LoginScreen} 
           options={{ headerShown: false }} 
+          
         />
 
         <Stack.Screen 
