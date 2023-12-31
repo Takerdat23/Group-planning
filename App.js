@@ -48,6 +48,15 @@ function StackNavigator() {
           title: 'Welcome',
         })}
       />
+
+      <Stack.Screen
+        name="ProfileScreen"
+        component={ProfileScreen}
+        options={({ route }) => ({
+          tabBarStyle: { display: getTabBarVisibility(route) },
+          title: 'profile',
+        })}
+      />
     
     </Stack.Navigator>
   );

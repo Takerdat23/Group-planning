@@ -1,17 +1,25 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import * as server from 'E:/Schoolworks/Docker/Final_project/Group-planning/src/server/AuthService.js';
+
+
 
 const LoginScreen = ({ navigation }) => {
+  
   const [userName, setUserName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  
 
-  const handleSignUp = () => {
-    // Handle the sign-up logic
+  const handleSignUp =  () => {
+    server.connectSocket(); 
+    console.log(userName, email,password); 
+    
+    server.signup(userName, email ,password); 
   };
 
   const handleSignIn = () => {
-    navigation.navigate('ProfileScreen'); // Adjust with your actual sign-in screen name
+    navigation.navigate('ProfileScreen'); 
   };
 
   return (
