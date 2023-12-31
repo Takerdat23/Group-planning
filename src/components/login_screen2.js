@@ -11,7 +11,7 @@ const LoginScreen = ({ navigation }) => {
   };
 
   const handleSignIn = () => {
-    navigation.navigate('SignInScreen'); // Adjust with your actual sign-in screen name
+    navigation.navigate('ProfileScreen'); // Adjust with your actual sign-in screen name
   };
 
   return (
