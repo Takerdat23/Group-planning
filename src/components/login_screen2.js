@@ -4,7 +4,7 @@ import * as server from 'E:/Schoolworks/Docker/Final_project/Group-planning/src/
 
 
 
-const LoginScreen = ({ navigation }) => {
+const SignUpScreen = ({ navigation }) => {
   
   const [userName, setUserName] = useState('');
   const [email, setEmail] = useState('');
@@ -14,7 +14,6 @@ const LoginScreen = ({ navigation }) => {
   const handleSignUp =  () => {
     server.connectSocket(); 
     console.log(userName, email,password); 
-    
     server.signup(userName, email ,password); 
   };
 
@@ -144,4 +143,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LoginScreen;
+export default SignUpScreen;
