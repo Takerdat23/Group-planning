@@ -5,7 +5,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 
 // Import your screens
-import LoginScreen from './src/components/login_screen2.js';
+import LoginScreen from './src/components/login_screen.js';
+import SignUpScreen from './src/components/login_screen2.js';
 import HelloWorldScreen from './src/components/helloworldscreen';
 import WelcomeScreen from './src/components/welcomescreen.js';
 import ProfileScreen from './src/components/ProfileScreen.js';
@@ -33,6 +34,14 @@ function StackNavigator() {
         })}
       />
       <Stack.Screen
+        name="SignUp"
+        component={SignUpScreen}
+        options={({ route }) => ({
+          tabBarStyle: { display: getTabBarVisibility(route) },
+          headerShown: false,
+        })}
+      />
+      <Stack.Screen
         name="Login"
         component={LoginScreen}
         options={({ route }) => ({
@@ -40,6 +49,7 @@ function StackNavigator() {
           headerShown: false,
         })}
       />
+
       <Stack.Screen
         name="HelloWorld"
         component={HelloWorldScreen}
@@ -57,6 +67,8 @@ function StackNavigator() {
           title: 'profile',
         })}
       />
+
+      
     
     </Stack.Navigator>
   );
@@ -98,6 +110,7 @@ const App = () => {
       >
    
         <Tab.Screen name="Home" component={StackNavigator} options={{ headerShown: false }} />
+        <Tab.Screen name="Project" component={ProfileScreen} />
         <Tab.Screen name="Profile" component={ProfileScreen} />
      
       </Tab.Navigator>
