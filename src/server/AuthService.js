@@ -1,4 +1,13 @@
 import io from 'socket.io-client';
+import React from 'react';
+
+const AuthContext = React.createContext({
+  loggedIn: false,
+  login: () => {},
+  logout: () => {},
+});
+
+export default AuthContext;
 
 let socket; // Declare socket variable at the module level to maintain its scope
 

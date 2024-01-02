@@ -1,12 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import * as server from 'E:/Schoolworks/Docker/Final_project/Group-planning/src/server/AuthService.js';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import AuthContext from '../server/AuthService.js'; 
 
 const LoginScreen = ({ navigation }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [isLoggedIn, setIsLoggingIn] = useState(false);
+
+  const auth = useContext(AuthContext);
+
+  if (!auth) {
+    
+    return <View><Text>Auth context is not available.</Text></View>;
+  }
 
   useEffect(() => {
     const loadCredentials = async () => {
@@ -36,10 +43,12 @@ const LoginScreen = ({ navigation }) => {
 
     server.login(username, password)
       .then((success) => {
-        setIsLoggingIn(true); 
+        
         if (success) {
          saveCredentials(username, password);
-         navigation.navigate('HelloWorld')
+         auth.login();
+         navigation.navigate('sharedproject'); 
+      
         }
       })
       .catch((error) => {
