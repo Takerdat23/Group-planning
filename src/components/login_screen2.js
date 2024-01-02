@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
-import * as server from 'E:/Schoolworks/Docker/Final_project/Group-planning/src/server/AuthService.js';
+import * as server from '../server/AuthService.js';
 
 
 

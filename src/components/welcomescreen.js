@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
 import { Image } from 'react-native';
-import logo from 'E:/Schoolworks/Docker/Final_project/Group-planning/assets/DallE_teamSync_logo.png';
+import logo from '../../assets/DallE_teamSync_logo.png';
 
 const WelcomeScreen = ({ navigation }) => {
 
