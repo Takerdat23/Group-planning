@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
-import * as server from 'E:/Schoolworks/Docker/Final_project/Group-planning/src/server/AuthService.js';
+import * as server from '../server/AuthService.js';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LoginScreen = ({ navigation }) => {
