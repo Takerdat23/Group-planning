@@ -4,14 +4,9 @@ This project is built with [Expo](https://expo.dev/) and React Native. It's set 
 
 ## Getting Started
 
-To run this project, you will need to have Node.js and Yarn package manager installed on your system. Additionally, the Expo CLI should be installed. If you haven't installed Expo CLI yet, you can install it globally with:
+To run this project, you will need to have Node.js and Yarn package manager installed on your system.
 
 ```sh
-npm install -g expo-cli
-
-
-yarn global add expo-cli
-
 yarn install
 
-expo start
+npx expo start
