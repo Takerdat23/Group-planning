@@ -11,7 +11,7 @@ const ProfileScreen = () => {
       
       <View style={styles.profileSection}>
         <Image
-          source={{ uri: '' }} // Replace with actual image source
+          source={{ uri: 'E:/Schoolworks/Docker/Final_project/Group-planning/assets/favicon.png' }} // Replace with actual image source
           style={styles.profileImage}
         />
         <Text style={styles.profileName}>Dilane3</Text>
@@ -36,12 +36,7 @@ const ProfileScreen = () => {
         <Text style={styles.manageAccountText}>Manage Account</Text>
       </TouchableOpacity>
       
-      <View style={styles.navigation}>
-        <Ionicons name="menu" size={24} color="black" />
-        <MaterialCommunityIcons name="email-outline" size={24} color="black" />
-        <FontAwesome name="user-circle-o" size={24} color="black" />
-        <Ionicons name="settings-outline" size={24} color="black" />
-      </View>
+  
     </ScrollView>
   );
 };

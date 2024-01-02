@@ -11,7 +11,9 @@ import HelloWorldScreen from './src/components/helloworldscreen';
 import WelcomeScreen from './src/components/welcomescreen.js';
 import ProfileScreen from './src/components/ProfileScreen.js';
 import SettingsScreen from './src/components/SettingScreen.js';
-
+import PersonalProject from './src/components/PersonalProject.js';
+import NewProjectScreen from './src/components/NewProjectScreen.js'
+import TaskScreen from './src/components/TodoScrenn.js'
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -68,8 +70,32 @@ function StackNavigator() {
         })}
       />
 
-      
-    
+      <Stack.Screen
+        name="PersonalProject"
+        component={PersonalProject}
+        options={({ route }) => ({
+          tabBarStyle: { display: getTabBarVisibility(route) },
+          title: 'projectP',
+        })}
+      />
+
+      <Stack.Screen
+        name="NewProject"
+        component={NewProjectScreen}
+        options={({ route }) => ({
+          tabBarStyle: { display: getTabBarVisibility(route) },
+          title: 'newproject',
+        })}
+      />
+
+      <Stack.Screen
+        name="todolist"
+        component={TaskScreen}
+        options={({ route }) => ({
+          tabBarStyle: { display: getTabBarVisibility(route) },
+          title: 'newproject',
+        })}
+      />
     </Stack.Navigator>
   );
 }
@@ -80,7 +106,7 @@ const getTabBarVisibility = (route) => {
     ? route.state.routes[route.state.index].name
     : route.params?.screen ;
 
-  if (['Login', 'SignUp', "WelcomeScreen"].includes(routeName)) {
+  if (['Login', 'SignUp', "WelcomeScreen", "NewProject"].includes(routeName)) {
     return 'none';
   }
   return 'flex';
@@ -92,7 +118,7 @@ const App = () => {
       <Tab.Navigator
         screenOptions={({ route }) => ({
           tabBarIcon: ({ focused, color, size }) => {
-            let iconName;
+            let iconName;7
 
             if (route.name === 'Home') {
               iconName = focused ? 'home' : 'home-outline';
@@ -110,7 +136,7 @@ const App = () => {
       >
    
         <Tab.Screen name="Home" component={StackNavigator} options={{ headerShown: false }} />
-        <Tab.Screen name="Project" component={ProfileScreen} />
+        <Tab.Screen name="Project" component={PersonalProject} />
         <Tab.Screen name="Profile" component={ProfileScreen} />
      
       </Tab.Navigator>

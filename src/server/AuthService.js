@@ -5,7 +5,7 @@ let socket; // Declare socket variable at the module level to maintain its scope
 export const connectSocket = () => {
   console.log("Attempting to connect to server...");
   // change the ip address according to your device 
-  socket = io('http://192.168.1.12:4000'); 
+  socket = io('https://groupplanning-26349a3e30f0.herokuapp.com'); 
 
   socket.on('connect', () => {
     console.log('Connected to server');

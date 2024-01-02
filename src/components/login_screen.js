@@ -1,12 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import * as server from 'E:/Schoolworks/Docker/Final_project/Group-planning/src/server/AuthService.js';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LoginScreen = ({ navigation }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isLoggedIn, setIsLoggingIn] = useState(false);
 
+  useEffect(() => {
+    const loadCredentials = async () => {
+      const savedUsername = await AsyncStorage.getItem('username');
+      const savedPassword = await AsyncStorage.getItem('password');
+      if (savedUsername && savedPassword) {
+        setUsername(savedUsername);
+        setPassword(savedPassword);
+      }
+    };
+
+    loadCredentials();
+  }, []);
+
+  const saveCredentials = async (username, password) => {
+    try {
+      await AsyncStorage.setItem('username', username);
+      await AsyncStorage.setItem('password', password);
+    } catch (error) {
+      // Error saving data
+      console.error('AsyncStorage error: ', error.message);
+    }
+  };
 
   const handleLogin = () => {
     server.connectSocket();
@@ -15,6 +38,7 @@ const LoginScreen = ({ navigation }) => {
       .then((success) => {
         setIsLoggingIn(true); 
         if (success) {
+         saveCredentials(username, password);
          navigation.navigate('HelloWorld')
         }
       })
