@@ -1,18 +1,9 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Image } from 'react-native';
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
-const projectData = [
-  {
-    id: '1',
-    title: 'Preparation for the exam',
-    createdAt: new Date(), // sets the current date and time
-    completionStatus: '1/4 completed',
-    collaborators: ['D', 'A', 'F', '+1'],
-  },
-  // Add more projects here...
-];
 
 const getRelativeTime = (date) => {
   const now = new Date();
@@ -28,14 +19,74 @@ const getRelativeTime = (date) => {
 };
 
 const PersonalProject = ({ navigation }) => {
-  const [projects, setProjects] = useState(projectData);
+  const [projects, setProjects] = useState([]);
 
-  const handleNewProject = () => {
-    navigation.navigate("NewProject");
+
+  
+
+  useEffect(() => {
+    loadProjects();
+  }, []);
+
+  useEffect(() => {
+    storeProjects(projects);
+  }, [projects]);
+
+
+
+  const storeProjects = async (projects) => {
+    try {
+      const tasksString = JSON.stringify(projects);
+      await AsyncStorage.setItem('Projects', tasksString);
+    } catch (e) {
+      console.error("Error saving tasks", e);
+    }
+  };
+  
+
+  const loadProjects = async () => {
+    try {
+      const projectsString = await AsyncStorage.getItem('Projects');
+      if (projectsString !== null) {
+        setProjects(JSON.parse(projectsString));
+      }
+    } catch (e) {
+      console.error("Error loading tasks", e);
+    }
   };
 
-  const handleProject = () => {
-    navigation.navigate("todolist");
+
+  const handleNewProjects = (newProject) => {
+    setProjects([...projects, newProject]);
+  };
+
+  const handleUpdateProjects = (id, newProjectcompletion) => {
+    console.log(newProjectcompletion); 
+    const updatedproject = projects.map(project => {
+      if (project.id === id) {
+        return { ...project, completionStatus: newProjectcompletion };
+      }
+      return project;
+    });
+    setProjects(updatedproject);
+  };
+
+
+
+  const handleNewProject = () => {
+    navigation.navigate('NewProject', {
+      onProjectSubmit: handleNewProjects,
+    });
+   
+  };
+
+  const handleProject = (project) => {
+    navigation.navigate("todolist", {
+      Current_project: project , 
+      Project_id: project.id, 
+      onNewTaskCompletion: handleUpdateProjects,
+    }); 
+   
   };
 
   return (
@@ -46,7 +97,8 @@ const PersonalProject = ({ navigation }) => {
         <TouchableOpacity 
           key={project.id} 
           style={styles.projectCard} 
-          onPress={handleProject}
+          
+          onPress={() => handleProject(project)}
         >
           <View style={[styles.projectIcon, { backgroundColor: 'blue' }]} />
           <View style={styles.projectDetails}>

@@ -2,15 +2,10 @@ import React, { useState, useEffect, useContext } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, FlatList, Modal, TextInput, Alert } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Ionicons } from '@expo/vector-icons'; 
 
 
 
-const tasksData = [
-  { key: '1', text: 'Buy clothes', status: 'To do' },
-  { key: '2', text: 'Buy ingredients for cakes', status: 'Pending' },
-  { key: '3', text: 'Buy fruit', status: 'Done' },
-
-];
 
 
 
@@ -40,15 +35,46 @@ const getRelativeTime = (date) => {
   else return `${days} days ago`;
 };
 
-const TaskScreen = () => {
-  const [tasks, setTasks] = useState(tasksData);
-  const [taskText, setTasktext ] = useState('');
-  const [key, setTaskKey] = useState('');
+const TaskScreen = ({route, navigation}) => {
+  const [tasks, setTasks] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState('');
   const [editingTaskKey, setEditingTaskKey] = useState(null);
   const [newTaskModalVisible, setNewTaskModalVisible] = useState(false);
+  const [settingModalVisible, setSettingModalVisible] = useState(false);
   const [newTaskText, setNewTaskText] = useState('');
+  const {onNewTaskCompletion }= route.params; 
+  const {Project_id} = route.params; 
+  const {Current_project} = route.params ; 
+
+
+  useEffect(() => {
+   
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity onPress={handleSettingsPress}>
+          <Ionicons
+            name="md-settings"
+            size={24}
+            color="black" 
+            style={{ marginRight: 10 }} // Provide some spacing
+          />
+        </TouchableOpacity>
+      ),
+
+    });
+  }, [navigation]);
+
+
+  const handleSettingsPress = () => {
+    setSettingModalVisible(true); 
+  };
+
+
+
+
+
+
 
   useEffect(() => {
     loadTasks();
@@ -58,6 +84,10 @@ const TaskScreen = () => {
     storeTasks(tasks);
   }, [tasks]);
 
+  const generateKeyWithTimestamp = () => {
+    return new Date().getTime().toString();
+  };
+
   const sortTasksByStatus = (tasks) => {
     const statusOrder = { 'To do': 1, 'Pending': 2, 'Done': 3 };
 
@@ -66,17 +96,25 @@ const TaskScreen = () => {
     });
   };
 
+  const setProjectChanges = () => {
+    
+    const tasksCompletion=  getCompletionStatus(); 
+    
+    onNewTaskCompletion(Project_id, tasksCompletion)
+  }
   const handleRemoveTask =  (id) => {
     console.log("removed"); 
     const newtasks = tasks.filter((item) => item.key !== id);
     setTasks(newtasks);
+    setProjectChanges();
   }
 
 
   const storeTasks = async (tasks) => {
     try {
       const tasksString = JSON.stringify(tasks);
-      await AsyncStorage.setItem('tasks', tasksString);
+      const name = Project_id + 'tasks'; 
+      await AsyncStorage.setItem(name, tasksString);
     } catch (e) {
       console.error("Error saving tasks", e);
     }
@@ -85,7 +123,8 @@ const TaskScreen = () => {
 
   const loadTasks = async () => {
     try {
-      const tasksString = await AsyncStorage.getItem('tasks');
+      const name = Project_id + 'tasks'; 
+      const tasksString = await AsyncStorage.getItem(name);
       if (tasksString !== null) {
         setTasks(JSON.parse(tasksString));
       }
@@ -96,7 +135,7 @@ const TaskScreen = () => {
 
   const addNewTask = () => {
     if(newTaskText.length){
-      const newKey = (tasks.length + 1).toString(); 
+      const newKey = generateKeyWithTimestamp(); 
       const newTask = {
       key: newKey,
       text: newTaskText,
@@ -105,6 +144,7 @@ const TaskScreen = () => {
     setTasks([...tasks, newTask]);
     storeTasks([...tasks, newTask]); 
     setNewTaskText('');
+   
     
     }
     else{
@@ -122,6 +162,7 @@ const TaskScreen = () => {
     }
     
   };
+  
 
   const changeTaskStatus = (key, newStatus) => {
     const updatedTasks = tasks.map(task => {
@@ -131,6 +172,7 @@ const TaskScreen = () => {
       return task;
     });
     setTasks(updatedTasks);
+ 
     setModalVisible(false);
   };
 
@@ -140,10 +182,21 @@ const TaskScreen = () => {
     setModalVisible(true);
   };
 
+  const getCompletionStatus= ()=> { 
+    const DoneTasks = tasks.filter(item => item.status === 'Done');
+    const DoneTasksCount = DoneTasks.length;
+    console.log(DoneTasksCount); 
+
+    return  DoneTasksCount.toString()+ "/" + tasks.length.toString()+  " completed";
+  }; 
+
   const DoneTasks = tasks.filter(item => item.status === 'Done');
   const DoneTasksCount = DoneTasks.length;
 
+  
+
   const sortedTasks = sortTasksByStatus(tasks);
+  setProjectChanges();
 
   return (
     
@@ -153,9 +206,10 @@ const TaskScreen = () => {
         <View style={[styles.initialBox, styles.boxF]}>
           <Text style={styles.initialLetter}>F</Text>
         </View>
-        <Text style={styles.title}>Go to the market</Text>
-        <Text style={styles.timeStamp}>5min ago</Text>
-        <Text style={styles.description}>Prepare things to organize a weeding {'<3'}</Text>
+       
+        <Text style={styles.title}>{Current_project.title}</Text>
+        <Text style={styles.timeStamp}>{getRelativeTime(new Date(Current_project.createdAt))}</Text>
+        <Text style={styles.description}>{Current_project.description}</Text>
       </View>
       <View style={styles.taskHeader}>
         <Text style={styles.taskCount}>You have {tasks.length} tasks</Text>
@@ -167,8 +221,9 @@ const TaskScreen = () => {
         </TouchableOpacity>
 
       </View>
+{/*modal for change task status */}
       <Modal
-        animationType="fade"
+        animationType="slide"
         transparent={true}
         visible={modalVisible}
         onRequestClose={() => setModalVisible(false)}
@@ -180,19 +235,19 @@ const TaskScreen = () => {
         >
           <View style={styles.modalContent}>
             <TouchableOpacity
-              style={styles.option}
+              style={[styles.option , getStatusStyle('Done')]}
               onPress={() => changeTaskStatus(editingTaskKey, 'Done')}
             >
               <Text style={styles.optionText}>Done</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={styles.option}
+              style={[styles.option , getStatusStyle('To do')]}
               onPress={() => changeTaskStatus(editingTaskKey ,'To do')}
             >
               <Text style={styles.optionText}>To do</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={styles.option}
+              style={[styles.option , getStatusStyle('Pending')]}
               onPress={() => changeTaskStatus(editingTaskKey ,'Pending')}
             >
               <Text style={styles.optionText}>Pending</Text>
@@ -200,15 +255,20 @@ const TaskScreen = () => {
           </View>
         </TouchableOpacity>
       </Modal>
-
-
+{/*modal for add tasks */}
       <Modal
         animationType="slide"
         transparent={true}
         visible={newTaskModalVisible}
         onRequestClose={() => setNewTaskModalVisible(false)}
       >
-        <View style={styles.centeredView}>
+      <TouchableOpacity
+          style={styles.centeredView}
+          activeOpacity={1}
+          onPressOut={() => setNewTaskModalVisible(false)}
+        >
+        
+       
           <View style={styles.AddtaskView}>
             <TextInput
               style={styles.addtaskTextInput}
@@ -226,8 +286,35 @@ const TaskScreen = () => {
             <Text style={styles.textStyle}>Add Task</Text>
           </TouchableOpacity>
         </View>
-      </View>
+     
+      </TouchableOpacity>
     </Modal>
+
+{/*modal for settings button */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={settingModalVisible}
+        onRequestClose={() => setSettingModalVisible(false)}
+      >
+      
+      <TouchableOpacity
+          style={styles.modalOverlay}
+          activeOpacity={1}
+          onPressOut={() => setSettingModalVisible(false)}
+        >
+          <View style={styles.modalContent}>
+            <TouchableOpacity
+              style={styles.option }
+              onPress={() => console.log("pressed")}
+            >
+              <Text style={styles.optionText}>Delete project</Text>
+            </TouchableOpacity>
+          </View>
+        </TouchableOpacity>
+    </Modal>
+
+
 
       <FlatList
         data={sortedTasks}

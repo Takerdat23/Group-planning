@@ -1,71 +1,119 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, ScrollView, FlatList } from 'react-native';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import React, { useState, useEffect, useContext } from 'react';
+import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Image } from 'react-native';
+import { Ionicons, FontAwesome } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
-const projectData = [
-  {
-    id: '1',
-    title: 'Preparation for the exam',
-    timestamp: '12min ago',
-    completionStatus: '1/4 completed',
-    collaborators: ['D', 'A', 'F', '+1'],
-  },
 
-];
+const getRelativeTime = (date) => {
+  const now = new Date();
+  const seconds = Math.round((now - date) / 1000);
+  const minutes = Math.round(seconds / 60);
+  const hours = Math.round(minutes / 60);
+  const days = Math.round(hours / 24);
 
-const SharedProjectsScreen = ({navigation}) => {
+  if (seconds < 60) return `${seconds} seconds ago`;
+  else if (minutes < 60) return `${minutes} minutes ago`;
+  else if (hours < 24) return `${hours} hours ago`;
+  else return `${days} days ago`;
+};
+
+const SharedProjectsScreen = ({ navigation }) => {
+  const [projects, setProjects] = useState([]);
+
+
   
-  const [projects, setProjects] = useState(projectData);
 
-  const handleproject = () => { 
-    navigation.navigate('sharedTasks')
-  }
+  useEffect(() => {
+    loadProjects();
+  }, []);
 
-  const renderProject = ({ item }) => (
-    <TouchableOpacity style={styles.projectCard} onPress={handleproject}>
-      <View style={[styles.projectIcon, styles.blueBox]} />
-      <View style={styles.projectDetails}>
-        <Text style={styles.projectTitle}>{item.title}</Text>
-        <View style={styles.collaborators}>
-          {item.collaborators.map((initial, index) => (
-            <Text key={index} style={styles.collaboratorInitial}>
-              {initial}
-            </Text>
-          ))}
-        </View>
-        <Text style={styles.projectTimestamp}>{item.timestamp}</Text>
-        <Text style={styles.projectCompletion}>{item.completionStatus}</Text>
-      </View>
-    </TouchableOpacity>
-  );
+  useEffect(() => {
+    storeProjects(projects);
+  }, [projects]);
+
+
+
+  const storeProjects = async (projects) => {
+    try {
+      const tasksString = JSON.stringify(projects);
+      await AsyncStorage.setItem('SharedProjects', tasksString);
+    } catch (e) {
+      console.error("Error saving tasks", e);
+    }
+  };
+  
+
+  const loadProjects = async () => {
+    try {
+      const projectsString = await AsyncStorage.getItem('SharedProjects');
+      if (projectsString !== null) {
+        setProjects(JSON.parse(projectsString));
+      }
+    } catch (e) {
+      console.error("Error loading tasks", e);
+    }
+  };
+
+
+  const handleNewProjects = (newProject) => {
+    setProjects([...projects, newProject]);
+  };
+
+  const handleUpdateProjects = (id, newProjectcompletion) => {
+    console.log(newProjectcompletion); 
+    const updatedproject = projects.map(project => {
+      if (project.id === id) {
+        return { ...project, completionStatus: newProjectcompletion };
+      }
+      return project;
+    });
+    setProjects(updatedproject);
+  };
+
+
+
+  const handleNewProject = () => {
+    navigation.navigate('NewProject', {
+      onProjectSubmit: handleNewProjects,
+    });
+   
+  };
+
+  const handleProject = (project) => {
+    navigation.navigate("todolist", {
+      Currunt_project: project , 
+      Project_id: project.id, 
+      onNewTaskCompletion: handleUpdateProjects,
+    }); 
+   
+  };
 
   return (
     <View style={styles.container}>
-      <View style={styles.topBar}>
-        <Ionicons name="menu" size={24} color="black" />
-        <Ionicons name="search" size={24} color="black" />
-        <MaterialCommunityIcons name="bell-outline" size={24} color="black" />
-      </View>
-      <FlatList
-        data={projects}
-        renderItem={renderProject}
-        keyExtractor={(item) => item.id}
-        ListHeaderComponent={
-          <>
-            <Text style={styles.title}>Shared Projects</Text>
-            <Text style={styles.projectCount}>You have {projects.length} shared project(s)</Text>
-          </>
-        }
-        ListFooterComponent={
-          <TouchableOpacity style={styles.newProjectButton}>
-            <Text style={styles.newProjectButtonText}>+ New Project</Text>
-          </TouchableOpacity>
-        }
-      />
+      <ScrollView style={styles.scrollView}>
+        <Text style={styles.projectCount}>You have {projects.length} projects</Text>
+        {projects.map((project, index) => (
+        <TouchableOpacity 
+          key={project.id} 
+          style={styles.projectCard} 
+          
+          onPress={() => handleProject(project)}
+        >
+          <View style={[styles.projectIcon, { backgroundColor: 'blue' }]} />
+          <View style={styles.projectDetails}>
+            <Text style={styles.projectTitle}>{project.title}</Text>
+            <Text style={styles.projectTimestamp}>{getRelativeTime(new Date(project.createdAt))}</Text>
+            <Text style={styles.projectCompletion}>{project.completionStatus}</Text>
+          </View>
+        </TouchableOpacity>
+      ))}
+        <TouchableOpacity style={styles.newProjectButton} onPress={handleNewProject}>
+          <Text style={styles.newProjectButtonText}>+ New Project</Text>
+        </TouchableOpacity>
+      </ScrollView>
     </View>
   );
-  
 };
 
 const styles = StyleSheet.create({
@@ -102,18 +150,10 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 10,
-    backgroundColor: 'blue',
     marginRight: 10,
   },
   projectDetails: {
     justifyContent: 'center',
-  },
-  collaborators: {
-    flexDirection: 'row',
-    marginBottom: 5,
-  },
-  collaboratorInitial: {
-    marginRight: 5,
   },
   projectTitle: {
     fontSize: 18,
@@ -137,6 +177,7 @@ const styles = StyleSheet.create({
   },
   newProjectButtonText: {
     color: '#fff',
+    fontSize: 16,
     fontWeight: 'bold',
   },
   bottomBar: {
@@ -145,9 +186,6 @@ const styles = StyleSheet.create({
     padding: 10,
     borderTopWidth: 1,
     borderTopColor: '#e1e1e1',
-  },
-  blueBox: {
-    // additional styles if necessary
   },
 });
 

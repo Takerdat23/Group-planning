@@ -1,19 +1,57 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, TextInput, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, TextInput, TouchableOpacity , Alert} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-const NewProjectScreen = () => {
+
+
+const NewProjectScreen = ({route, navigation}) => {
   const [projectName, setProjectName] = useState('');
   const [projectDescription, setProjectDescription] = useState('');
+  const { onProjectSubmit } = route.params;
 
-  // Functions to handle creating and canceling will go here
+  
+
+  const generateKeyWithTimestamp = () => {
+    return new Date().getTime().toString();
+  };
+
   const handleCreate = () => {
-    // Logic to create a new project
-    console.log('Project Created:', projectName, projectDescription);
+    if (projectName.length){
+
+  
+  
+    const newProject = { 
+      id: generateKeyWithTimestamp() ,
+      title: projectName, 
+      createdAt: new Date(),
+      completionStatus: '',
+      description: projectDescription, 
+      Tasks: [], 
+      collaborators: [],
+    }
+    console.log('Project Created:',newProject);
+    onProjectSubmit(newProject); 
+    navigation.goBack(); 
+   }
+    else{
+
+      Alert.alert(
+        "Oops", 
+        "Project name cannot be empty", 
+          [
+          {
+            text: "OK",
+            onPress: () => console.log("OK Pressed"),
+            style: "cancel"
+          }
+          ]
+        );
+      }
+  
   };
 
   const handleCancel = () => {
-    // Logic to cancel creation
+    navigation.goBack(); 
     console.log('Creation Cancelled');
   };
 
@@ -21,17 +59,15 @@ const NewProjectScreen = () => {
     <View style={styles.container}>
      
       <TextInput
-        style={styles.input}
-        placeholder="Preparation for the exam"
+        style={styles.ProjectNameinput}
+        placeholder="Enter project title"
         value={projectName}
         onChangeText={setProjectName}
       />
-      <Text style={styles.inputDescription}>
-        Provide at least 4 characters and a maximum of 40
-      </Text>
+    
       <TextInput
-        style={styles.input}
-        placeholder="Prepare myself for the final exam."
+        style={styles.Descriptioninput}
+        placeholder="Descriptions"
         value={projectDescription}
         onChangeText={setProjectDescription}
         multiline
@@ -64,7 +100,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginLeft: 10,
   },
-  input: {
+  ProjectNameinput: {
     borderWidth: 1,
     borderColor: '#ddd',
     padding: 10,
@@ -72,6 +108,21 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     backgroundColor: '#fff',
     marginBottom: 10,
+    height:'15%', 
+    textAlign: 'left',
+    textAlignVertical: 'top', 
+  },
+  Descriptioninput: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    padding: 10,
+    fontSize: 16,
+    borderRadius: 6,
+    backgroundColor: '#fff',
+    marginBottom: 10,
+    height:'30%', 
+    textAlign: 'left',
+    textAlignVertical: 'top', 
   },
   inputDescription: {
     fontSize: 12,
