@@ -1,43 +1,65 @@
-import React from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Image } from 'react-native';
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
 
-const PersonalProject = ({navigation}) => {
-  const handleNewProject =() => {
-    navigation.navigate("NewProject"); 
+
+const projectData = [
+  {
+    id: '1',
+    title: 'Preparation for the exam',
+    createdAt: new Date(), // sets the current date and time
+    completionStatus: '1/4 completed',
+    collaborators: ['D', 'A', 'F', '+1'],
+  },
+  // Add more projects here...
+];
+
+const getRelativeTime = (date) => {
+  const now = new Date();
+  const seconds = Math.round((now - date) / 1000);
+  const minutes = Math.round(seconds / 60);
+  const hours = Math.round(minutes / 60);
+  const days = Math.round(hours / 24);
+
+  if (seconds < 60) return `${seconds} seconds ago`;
+  else if (minutes < 60) return `${minutes} minutes ago`;
+  else if (hours < 24) return `${hours} hours ago`;
+  else return `${days} days ago`;
+};
+
+const PersonalProject = ({ navigation }) => {
+  const [projects, setProjects] = useState(projectData);
+
+  const handleNewProject = () => {
+    navigation.navigate("NewProject");
   };
 
-  const handleProject =() => {
+  const handleProject = () => {
     navigation.navigate("todolist");
   };
+
   return (
     <View style={styles.container}>
-      
       <ScrollView style={styles.scrollView}>
-        <Text style={styles.title}>Personal Projects</Text>
-        <Text style={styles.projectCount}>You have 2 projects</Text>
-        <TouchableOpacity style={styles.projectCard} onPress={handleProject}>
+        <Text style={styles.projectCount}>You have {projects.length} projects</Text>
+        {projects.map((project, index) => (
+        <TouchableOpacity 
+          key={project.id} 
+          style={styles.projectCard} 
+          onPress={handleProject}
+        >
           <View style={[styles.projectIcon, { backgroundColor: 'blue' }]} />
           <View style={styles.projectDetails}>
-            <Text style={styles.projectTitle}>Preparation for the exam</Text>
-            <Text style={styles.projectTimestamp}>12min ago</Text>
-            <Text style={styles.projectCompletion}>1/4 completed</Text>
+            <Text style={styles.projectTitle}>{project.title}</Text>
+            <Text style={styles.projectTimestamp}>{getRelativeTime(new Date(project.createdAt))}</Text>
+            <Text style={styles.projectCompletion}>{project.completionStatus}</Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.projectCard} onPress={handleProject} >
-          <View style={[styles.projectIcon, { backgroundColor: 'green' }]} />
-          <View style={styles.projectDetails}>
-            <Text style={styles.projectTitle}>Preparation for the exam</Text>
-            <Text style={styles.projectTimestamp}>12min ago</Text>
-            <Text style={styles.projectCompletion}>1/4 completed</Text>
-          </View>
-        </TouchableOpacity>
+      ))}
         <TouchableOpacity style={styles.newProjectButton} onPress={handleNewProject}>
           <Text style={styles.newProjectButtonText}>+ New Project</Text>
-          
         </TouchableOpacity>
       </ScrollView>
-    
     </View>
   );
 };

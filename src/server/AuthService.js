@@ -3,8 +3,8 @@ import React from 'react';
 
 const AuthContext = React.createContext({
   loggedIn: false,
-  login: () => {},
-  logout: () => {},
+  login: () => {loggedIn = true; },
+  logout: () => {loggedIn = false; },
 });
 
 export default AuthContext;
@@ -61,22 +61,30 @@ export const login = (username, password) => {
       return;
     }
 
-    socket.emit('checkUnique', username); 
-    socket.on('UsernameUnique', (isUnique) => {
+    const onUsernameUnique = (isUnique) => {
       if (!isUnique) {
         socket.emit('login', username, password);
-        socket.on('serverLog', (text) => {
-          if (text.success) {
-            resolve(true); // Resolve the promise with true if login is successful
-          } else {
-            reject(text.message); // Reject the promise if there is an error
-          }
-        });
       } else {
         console.log("Account doesn't exist");
-        reject("Account doesn't exist"); // Reject the promise as the account doesn't exist
+        reject("Account doesn't exist");
+        socket.off('UsernameUnique', onUsernameUnique);
       }
-    });
+    };
+
+    const LoginState = (text) => {
+      console.log(text); 
+      if (text.success) {
+        resolve(true);
+      } else {
+        reject(text.message);
+      }
+      socket.off('LoginState', LoginState);
+    };
+    socket.emit('checkUnique', username); 
+    socket.on('UsernameUnique', onUsernameUnique);
+    socket.on('LoginState', LoginState );
+
+    
   });
 };
 

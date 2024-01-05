@@ -157,9 +157,9 @@ const App = () => {
             if (route.name === 'Home') {
               iconName = focused ? 'home' : 'home-outline';
             } else if (route.name === 'Personal') {
-              iconName = focused ? 'briefcase' : 'briefcase-outline'; // Example icon for Personal
+              iconName = focused ? 'briefcase' : 'briefcase-outline'; 
             } else if (route.name === 'Shared') {
-              iconName = focused ? 'people' : 'people-outline'; // Example icon for Shared
+              iconName = focused ? 'people' : 'people-outline'; 
             } else if (route.name === 'Profile') {
               iconName = focused ? 'person' : 'person-outline';
             } else if (route.name === 'Settings') {
@@ -169,7 +169,7 @@ const App = () => {
             // Return the icon component
             return <Ionicons name={iconName} size={size} color={color} />;
           },
-          tabBarActiveTintColor: 'tomato',
+          tabBarActiveTintColor: 'blue',
           tabBarInactiveTintColor: 'gray',
         })}
       >
@@ -180,14 +180,14 @@ const App = () => {
           component={SharedProjectsScreen} 
           listeners={({ navigation }) => ({
             tabPress: event => {
-              // Prevent default action
+             
               event.preventDefault();
               console.log(loggedIn); 
               if (!loggedIn) {
       
                 navigation.navigate('Login');
               } else {
-                // If logged in, navigate to the SharedProjectsScreen
+                
                 navigation.navigate('Shared');
               }
             },
