@@ -60,6 +60,15 @@ const PersonalProject = ({ navigation }) => {
     setProjects([...projects, newProject]);
   };
 
+  function getRandomColor() {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  }
+
   const handleUpdateProjects = (id, newProjectcompletion) => {
     console.log(newProjectcompletion); 
     const updatedproject = projects.map(project => {
@@ -100,7 +109,7 @@ const PersonalProject = ({ navigation }) => {
           
           onPress={() => handleProject(project)}
         >
-          <View style={[styles.projectIcon, { backgroundColor: 'blue' }]} />
+          <View style={[styles.projectIcon, { backgroundColor: getRandomColor() }]} />
           <View style={styles.projectDetails}>
             <Text style={styles.projectTitle}>{project.title}</Text>
             <Text style={styles.projectTimestamp}>{getRelativeTime(new Date(project.createdAt))}</Text>
