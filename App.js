@@ -5,18 +5,15 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 
 // Import your screens
-import LoginScreen from './src/components/login_screen.js';
-import SignUpScreen from './src/components/login_screen2.js';
-import HelloWorldScreen from './src/components/helloworldscreen';
-import WelcomeScreen from './src/components/welcomescreen.js';
-import ProfileScreen from './src/components/ProfileScreen.js';
-import SettingsScreen from './src/components/SettingScreen.js';
-import PersonalProject from './src/components/PersonalProject.js';
-import NewProjectScreen from './src/components/NewProjectScreen.js'
-import TaskScreen from './src/components/TodoScrenn.js'
-import SharedProjectsScreen from './src/components/SharedProject.js'
+import LoginScreen from './src/components/LoginScreen/index.js';
+import SignUpScreen from './src/components/SignUp/index.js';
+import HelloWorldScreen from './src/components/HelloWorld/index.js';
+import ProfileScreen from './src/components/ProfileScreen/index.js';
+import PersonalProject from './src/components/PersonalProject/index.js';
+import NewProjectScreen from './src/components/NewProjectScreen/index.js'
+import TaskScreen from './src/components/ToDoScreen/index.js'
+import SharedProjectsScreen from './src/components/SharedProject/index.js'
 import SharedTaskScreen from './src/components/SharedTaskScreeen.js'
-
 import AuthContext from './src/server/AuthService.js';
 
 const Stack = createNativeStackNavigator();
@@ -32,14 +29,7 @@ function StackNavigator() {
         
       }}
     >
-      <Stack.Screen
-        name="WelcomeScreen"
-        component={WelcomeScreen}
-        options={({ route }) => ({
-          tabBarStyle: { display: getTabBarVisibility(route) },
-          headerShown: false,
-        })}
-      />
+   
       <Stack.Screen
         name="SignUp"
         component={SignUpScreen}
