@@ -6,6 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -29,21 +30,38 @@ const styles = StyleSheet.create({
     color: 'gray',
     marginBottom: 15,
   },
-  projectCard: {
+  taskItem: {
     flexDirection: 'row',
-    backgroundColor: '#f0f0f0',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     padding: 15,
-    borderRadius: 10,
-    marginBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+
+  projectCard: {
+    // ... your existing styles,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 20, // Increased padding
+    borderRadius: 20,
+    backgroundColor: '#FFF', 
+    shadowColor: '#000', // These shadow properties are for iOS
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5, // This is for Android
   },
   projectIcon: {
-    width: 50,
-    height: 50,
+    width: 60,
+    height: 60,
     borderRadius: 10,
     marginRight: 10,
   },
   projectDetails: {
-    justifyContent: 'center',
+    flex: 1, // Adjust this as necessary to take up the appropriate space
+    justifyContent: 'center', 
   },
   projectTitle: {
     fontSize: 18,
@@ -77,6 +95,54 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: '#e1e1e1',
   },
+
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5
+  },
+  modalTextInput: {
+    height: 40,
+    margin: 12,
+    borderWidth: 1,
+    padding: 10,
+    width: 200,
+  },
+
+  projectEntry: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+   
+  },
+  addMemberButton: {
+  
+    marginLeft: 10,
+    padding: 10, 
+  },
+  addMemberButtonText: {
+
+    borderRadius: 5,
+    padding: 15,
+    marginTop: 10,
+  },
+
 });
 
 export default styles;

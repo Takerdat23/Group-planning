@@ -22,34 +22,43 @@ export const connectSocket = () => {
   return socket;
 };
 
-export const signup = (username, email, password) => { 
-  if (!socket) {
-    console.warn("Socket not connected");
-    return;
-  }
-  let unique ;
-  socket.emit('checkUnique', username); 
 
-  socket.on('UsernameUnique', async (isunique) =>{ 
-    unique= isunique; 
-  
-  
-  if (unique){
+export const signup = (username, email, password) => {
+  return new Promise((resolve, reject) => {
+    if (!socket) {
+      console.warn("Socket not connected");
+      reject("Socket not connected");
+      return;
+    }
+
+    const onUsernameUnique = (isUnique) => {
+      if (isUnique) {
+        socket.emit('signup', username, email, password);
+      } else {
+        console.log("Account already exist");
+        reject("Account already exist");
+        socket.off('UsernameUnique', onUsernameUnique);
+      }
+    };
+
+    const SignUpState = (text) => {
+      console.log(text); 
+      if (text == 'Signup successful') {
+        resolve(true);
+      } else {
+        reject(false);
+      }
+      socket.off('SignUpState', SignUpState);
+    };
+    socket.emit('checkUnique', username); 
+    socket.on('UsernameUnique', onUsernameUnique);
+    socket.on('SignUpState', SignUpState );
+
     
-    socket.emit('signup', username, email, password);
-    socket.on('serverLog', (text) => {
-    console.log(text);
   });
-  }
-  else{
-    socket.on('usernametaken', (text) => {
-        console.log(text)
-    });
-  }
-}); 
-
-  
 };
+
+
 
 
 

@@ -26,7 +26,7 @@ const NewProjectScreen = ({route, navigation}) => {
         completionStatus: '',
         description: projectDescription, 
         Tasks: [], 
-        collaborators: [],
+        members: [],
       }
       console.log('Project Created:',newProject);
       onProjectSubmit(newProject); 

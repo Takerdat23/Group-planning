@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
 import styles from './styles.js'
 import * as server from '../../server/AuthService.js';
 
@@ -10,12 +10,28 @@ const SignUpScreen = ({ navigation }) => {
   const [userName, setUserName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   
+ 
+
 
   const handleSignUp =  () => {
     server.connectSocket(); 
-    console.log(userName, email,password); 
-    server.signup(userName, email ,password); 
+    setLoading(true);
+    setError('');
+  
+    server.signup(userName, email, password)
+      .then((success) => {
+        if (success) {
+          setLoading(false);
+          navigation.navigate('Login');
+        }
+      })
+      .catch((errorMessage) => {
+        setLoading(false);
+        setError(errorMessage); 
+      });
   };
 
   const handleSignIn = () => {
@@ -61,7 +77,10 @@ const SignUpScreen = ({ navigation }) => {
         <TouchableOpacity style={styles.button} onPress={handleSignUp}>
           <Text style={styles.buttonText}>Sign Up</Text>
         </TouchableOpacity>
+        
       </View>
+      {loading && <ActivityIndicator size="large" color="#F82727" />}
+      <Text style={styles.errorText}>{error}</Text>
 
       <Text style={styles.signInText}>Already have an account?</Text>
       <TouchableOpacity style={styles.signInButton} onPress={handleSignIn}>

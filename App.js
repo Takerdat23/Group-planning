@@ -13,7 +13,7 @@ import PersonalProject from './src/components/PersonalProject/index.js';
 import NewProjectScreen from './src/components/NewProjectScreen/index.js'
 import TaskScreen from './src/components/ToDoScreen/index.js'
 import SharedProjectsScreen from './src/components/SharedProject/index.js'
-import SharedTaskScreen from './src/components/SharedTaskScreeen.js'
+import SharedTaskScreen from './src/components/SharedTask/index.js'
 import AuthContext from './src/server/AuthService.js';
 
 const Stack = createNativeStackNavigator();
