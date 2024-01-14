@@ -5,7 +5,7 @@ import styles from './styles.js'
 import * as server from '../../server/AuthService.js';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AuthContext from '../../server/AuthService.js'; 
-
+import {UserProvider, useUser} from '../../server/context.js'; 
 
 
 
@@ -14,6 +14,7 @@ const LoginScreen = ({ navigation }) => {
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const { user, setUser } = useUser();
   
     const auth = useContext(AuthContext);
   
@@ -56,12 +57,14 @@ const LoginScreen = ({ navigation }) => {
             saveCredentials(username, password);
             auth.login();
             setLoading(false);
+            setUser(username); 
+          
             navigation.navigate('sharedproject');
           }
         })
         .catch((errorMessage) => {
           setLoading(false);
-          setError(errorMessage); 
+          setError(errorMessage.toString()); // Convert error to string if it's an object
         });
     };
   
@@ -76,6 +79,7 @@ const LoginScreen = ({ navigation }) => {
     };
   
     return (
+     
       <View style={styles.container}>
         
         <Text style={styles.title}>Log In</Text>
@@ -108,6 +112,7 @@ const LoginScreen = ({ navigation }) => {
           </Text>
         </Text>
       </View>
+   
     );
   };
 

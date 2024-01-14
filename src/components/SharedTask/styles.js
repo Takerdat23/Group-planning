@@ -45,6 +45,20 @@ const styles = StyleSheet.create({
       fontSize: 24,
       fontWeight: 'bold',
     },
+    taskCard: {
+      // ... your existing styles,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      padding: 20, // Increased padding
+      borderRadius: 20,
+      backgroundColor: '#FFF', 
+      shadowColor: '#000', // These shadow properties are for iOS
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.25,
+      shadowRadius: 3.84,
+      elevation: 5, // This is for Android
+    },
     title: {
       fontSize: 20,
       fontWeight: 'bold',

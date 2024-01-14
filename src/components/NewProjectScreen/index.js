@@ -2,13 +2,15 @@ import React, { useState } from 'react';
 import { StyleSheet, View, Text, TextInput, TouchableOpacity , Alert} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import styles from './styles.js'
+import AuthContext from '../../server/AuthService.js'; 
+import { useUser } from '../../server/context.js'; 
 
 const NewProjectScreen = ({route, navigation}) => {
     const [projectName, setProjectName] = useState('');
     const [projectDescription, setProjectDescription] = useState('');
     const { onProjectSubmit } = route.params;
+    const { user, setUser } = useUser();
   
-    
   
     const generateKeyWithTimestamp = () => {
       return new Date().getTime().toString();
@@ -27,6 +29,7 @@ const NewProjectScreen = ({route, navigation}) => {
         description: projectDescription, 
         Tasks: [], 
         members: [],
+        master: user,
       }
       console.log('Project Created:',newProject);
       onProjectSubmit(newProject); 

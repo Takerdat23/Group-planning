@@ -15,7 +15,7 @@ import TaskScreen from './src/components/ToDoScreen/index.js'
 import SharedProjectsScreen from './src/components/SharedProject/index.js'
 import SharedTaskScreen from './src/components/SharedTask/index.js'
 import AuthContext from './src/server/AuthService.js';
-
+import {UserProvider} from './src/server/context.js';
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -137,6 +137,7 @@ const App = () => {
 
 
   return (
+    <UserProvider>
     <AuthContext.Provider value={authContextValue}>
     <NavigationContainer>
       <Tab.Navigator
@@ -188,6 +189,7 @@ const App = () => {
       </Tab.Navigator>
     </NavigationContainer>
     </AuthContext.Provider>
+    </UserProvider>
   );
 };
 

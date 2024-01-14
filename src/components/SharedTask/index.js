@@ -24,6 +24,7 @@ import styles from './styles.js'
      
       navigation.setOptions({
         headerRight: () => (
+          <View>
           <TouchableOpacity onPress={handleSettingsPress}>
             <Ionicons
               name="md-settings"
@@ -32,7 +33,11 @@ import styles from './styles.js'
               style={{ marginRight: 10 }} // Provide some spacing
             />
           </TouchableOpacity>
+
+      
+          </View>
         ),
+   
   
       });
     }, [navigation]);
@@ -78,6 +83,10 @@ import styles from './styles.js'
       
       onNewTaskCompletion(Project_id, tasksCompletion)
     }
+
+    const handleDeleteMember = () =>{
+
+    };
     const handleRemoveTask =  (id) => {
       console.log("removed"); 
       const newtasks = tasks.filter((item) => item.key !== id);
@@ -138,6 +147,8 @@ import styles from './styles.js'
       }
       
     };
+
+
     
   
     const changeTaskStatus = (key, newStatus) => {
@@ -286,6 +297,14 @@ import styles from './styles.js'
               >
                 <Text style={styles.optionText}>Delete project</Text>
               </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.option }
+                onPress={() => console.log("pressed")}
+              >
+                <Text style={styles.optionText}>Edit members</Text>
+              </TouchableOpacity>
+
             </View>
           </TouchableOpacity>
       </Modal>
@@ -295,7 +314,7 @@ import styles from './styles.js'
         <FlatList
           data={sortedTasks}
           renderItem={({ item }) => (
-            <View style={styles.taskItem}>
+            <View style={styles.taskCard}>
               <Text style={styles.taskText}>{item.text}</Text>
   
               <TouchableOpacity onPress={() => openModal(item)}>
