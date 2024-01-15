@@ -352,7 +352,7 @@ import styles from './styles.js'
           >
             <View style={styles.modalContent}>
               <TouchableOpacity
-                style={styles.option }
+                style={styles.deleteOption }
                 onPress={() => handleDeleteProject()}
               >
                 <Text style={styles.optionText}>Delete project</Text>
@@ -360,7 +360,7 @@ import styles from './styles.js'
 
               {editMemberVisible && (
                   <TouchableOpacity
-                    style={styles.option}
+                    style={styles.editmemberOption}
                     onPress={() => handleEditmember()}
                   >
                   <Text style={styles.optionText}>Edit members</Text>

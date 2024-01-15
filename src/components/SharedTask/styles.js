@@ -191,6 +191,7 @@ const styles = StyleSheet.create({
     optionText: {
       textAlign: 'center',
       fontSize: 16,
+      color: 'white', 
     },
   
     AddtaskView: {
@@ -228,7 +229,25 @@ const styles = StyleSheet.create({
       borderWidth: 1,
       borderColor: '#ddd',
       borderRadius: 5
-    }
+    }, 
+
+    deleteOption: {
+   
+      borderRadius: 5,
+      padding: 10,
+      elevation: 2,
+      backgroundColor: "#F66748", 
+      marginBottom: 10, 
+      
+    }, 
+
+    editmemberOption: {
+
+      borderRadius: 5,
+      padding: 10,
+      elevation: 2,
+      backgroundColor: "#2196F3"
+    },  
   });
   
 export default styles;
