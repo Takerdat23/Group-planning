@@ -18,7 +18,7 @@ import styles from './styles.js'
     const {onNewTaskCompletion }= route.params; 
     const {Project_id} = route.params; 
     const {Current_project} = route.params ; 
-  
+    const {onProjectDelete} = route.params;
   
     useEffect(() => {
      
@@ -178,7 +178,12 @@ import styles from './styles.js'
   
     const sortedTasks = sortTasksByStatus(tasks);
     setProjectChanges();
-  
+
+    const deleteProject = async() => {
+      onProjectDelete(Project_id); 
+      navigation.goBack();
+    }
+
     return (
       
       <View style={styles.container}>
