@@ -21,6 +21,8 @@ import styles from './styles.js'
     const [project , setProject] = useState(Current_project); 
     const {user , setUser} = useUser(); 
     const {Memberlist, setMemberlist} = useMembers();
+
+
   
   
     useEffect(() => {
@@ -177,7 +179,8 @@ import styles from './styles.js'
         const newTask = {
         key: newKey,
         text: newTaskText,
-        status: 'To do' 
+        status: 'To do' , 
+        asigned_to : '', 
       };
       setTasks([...tasks, newTask]);
       storeTasks([...tasks, newTask]); 
@@ -207,6 +210,17 @@ import styles from './styles.js'
       setTasks(newtasks);
       setProjectChanges();
     }; 
+
+
+    const handleAssignmentPress = (task) => {
+      console.log(Memberlist); 
+    
+      setAssignModalVisible(true);
+    };
+
+    const handleAssignPress= (member) => { 
+      setAssignModalVisible(false);
+    };
 
 
     
@@ -370,25 +384,37 @@ import styles from './styles.js'
           </TouchableOpacity>
       </Modal>
   
+      {/*modal for assign button */}
+    
+     
   
-  
-        <FlatList
-          data={sortedTasks}
-          renderItem={({ item }) => (
-            <View style={styles.taskCard}>
+              
+      {/*List of tasks */}
+
+
+      <FlatList
+        data={sortedTasks}
+        renderItem={({ item }) => (
+          <View style={styles.taskCard}>
+            <View style={{ flex: 1, justifyContent: 'center' }}>
               <Text style={styles.taskText}>{item.text}</Text>
-  
-              <TouchableOpacity onPress={() => openModal(item)}>
-                <Text style={[styles.taskStatus, getStatusStyle(item.status)]}>
-                  {item.status}
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => handleRemoveTask(item.key)}>
-                <FontAwesome name="trash-o" size={24} color="red" style={styles.trashIcon} />
+              <Text style={styles.assignedMemberText}>{"Asignment: "+ item.asigned_to}</Text>
+
+              <TouchableOpacity onPress={() => handleAssignmentPress(item)}>
+               <Ionicons name="person-add" size={24} ></Ionicons>
               </TouchableOpacity>
             </View>
-          )}
-          keyExtractor={(item) => item.key}
+            <TouchableOpacity onPress={() => openModal(item)}>
+              <Text style={[styles.taskStatus, getStatusStyle(item.status)]}>
+                {item.status}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => handleRemoveTask(item.key)}>
+              <FontAwesome name="trash-o" size={24} color="red" style={styles.trashIcon} />
+            </TouchableOpacity>
+          </View>
+        )}
+        keyExtractor={(item) => item.key}
         />
         <View style={styles.footer}>
           <Text style={styles.completionText}>{DoneTasksCount}/{tasks.length} completed</Text>

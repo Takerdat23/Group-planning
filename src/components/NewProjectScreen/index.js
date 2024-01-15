@@ -33,7 +33,7 @@ const NewProjectScreen = ({route, navigation}) => {
       }
       console.log('Project Created:',newProject);
       onProjectSubmit(newProject); 
-      navigation.navigate("sharedproject"); 
+      navigation.goBack();  
      }
       else{
   

@@ -18,6 +18,7 @@ import styles from './styles.js'
     const {onNewTaskCompletion }= route.params; 
     const {Project_id} = route.params; 
     const {Current_project} = route.params ; 
+    const {onDeleteCall} = route.params; 
   
   
     useEffect(() => {
@@ -76,7 +77,31 @@ import styles from './styles.js'
         color += letters[Math.floor(Math.random() * 16)];
       }
       return color;
-    }
+    };
+
+
+    const handleDeleteProject = () => {
+      Alert.alert(
+        "Delete Project",
+        "Are you sure you want to delete this project?",
+        [
+          {
+            text: "Cancel",
+            onPress: () => console.log("Cancel Pressed"),
+            style: "cancel"
+          },
+          {
+            text: "OK",
+            onPress: () => {
+              console.log("OK Pressed, delete the project");
+              onDeleteCall(Current_project.id);
+            }
+          }
+        ],
+        { cancelable: false }
+      );
+    };
+
     const setProjectChanges = () => {
       
       const tasksCompletion=  getCompletionStatus(); 
@@ -88,7 +113,7 @@ import styles from './styles.js'
       const newtasks = tasks.filter((item) => item.key !== id);
       setTasks(newtasks);
       setProjectChanges();
-    }
+    };
   
   
     const storeTasks = async (tasks) => {
@@ -286,8 +311,8 @@ import styles from './styles.js'
           >
             <View style={styles.modalContent}>
               <TouchableOpacity
-                style={styles.option }
-                onPress={() => console.log("pressed")}
+                style={styles.deleteOption }
+                onPress={() => handleDeleteProject()}
               >
                 <Text style={styles.optionText}>Delete project</Text>
               </TouchableOpacity>

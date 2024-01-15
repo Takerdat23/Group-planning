@@ -90,11 +90,19 @@ const PersonalProject = ({ navigation }) => {
    
   };
 
+  const handleDeleteProject = (Project_to_delete_id) => {
+    const updated_projects = projects.filter(project => project.id !== Project_to_delete_id ); 
+    setProjects(updated_projects); 
+    navigation.goBack(); 
+ };
+
+
   const handleProject = (project) => {
     navigation.navigate("todolist", {
       Current_project: project , 
       Project_id: project.id, 
       onNewTaskCompletion: handleUpdateProjects,
+      onDeleteCall: handleDeleteProject, 
     }); 
    
   };
