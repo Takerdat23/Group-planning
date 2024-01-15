@@ -9,86 +9,64 @@ const AuthContext = React.createContext({
 
 export default AuthContext;
 
+// Declare socket variable at the module level to maintain its scope
+const endpoint = "https://group-planning-websocket.webpubsub.azure.com"
+const path = "/clients/socketio/hubs/group_planning"
 
-
-let socket; // Declare socket variable at the module level to maintain its scope
-
-export const connectSocket = () => {
-  console.log("Attempting to connect to server...");
-  // change the ip address according to your device 
-  socket = io('http://192.168.13.3:4000'); 
-
-  socket.on('connect', () => {
-    console.log('Connected to server');
+let isConnect = false
+let socket = null
+if(!isConnect) {
+  socket = io(endpoint, {
+    path: path,
   });
-  return socket;
-};
+}
 
+socket.on('handshake', (word) => {
+  console.log(word);
+  isConnect = true;
+});
 
-export const signup = (username, email, password) => {
+socket.on("disconnect", () => {
+  console.log("disconnect from server")
+  isConnect = false
+})
+
+export function signup(username, email, password) {
   const userData = {
     name: username,
     email: email, 
     password: password, 
   };
 
-  socket.emit('sign-up', userData);
-
+  socket.emit('sign-up', userData)
   return new Promise((resolve, reject) => {
-    if (!socket) {
-      console.warn("Socket not connected");
-      reject("Socket not connected");
-      return;
-    }
-
-    
-    const SignUpState = (text) => {
-      console.log(text); 
-      
-      if (text == 'Signup successful') {
-        resolve(true);
-      } else {
-        reject(false);
-      }
-      socket.off('SignUpState', SignUpState);
-    }; 
-    socket.on('SignUpState', SignUpState );
-   
-  });
+    socket.on("user log", (message) => {
+      if(message == "Signup successful")
+        resolve()
+      else 
+        reject(message)
+      socket.off("user log")
+    })
+  })
 };
 
-
-
-
-
-export const login = (username, password) => {
-
+export function login(email, password) {
   const userData = {
-    email: username, 
+    email: email, 
     password: password, 
   };
+
   socket.emit('login', userData);
 
   return new Promise((resolve, reject) => {
-    if (!socket) {
-      console.warn("Socket not connected");
-      reject("Socket not connected");
-      return;
-    }
-
-    const LoginState = (text) => {
-      
-      console.log(text); 
-      if (text.success) {
-        resolve(true);
-      } else {
-        reject(text);
-      }
-      socket.off('LoginState', LoginState);
-    };
-
-    socket.on('LoginState', LoginState );    
-  });
+    socket.on("user log", (message) => {
+      if(message == "Login successful")
+        resolve()
+      else
+        reject(message)
+      socket.off("user log")
+    })
+  })
 };
 
 

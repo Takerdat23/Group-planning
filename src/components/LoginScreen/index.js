@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import styles from './styles.js'
-import * as server from '../../server/AuthService.js';
+import { login } from '../../server/AuthService.js';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AuthContext from '../../server/AuthService.js'; 
 import {UserProvider, useUser} from '../../server/context.js'; 
@@ -10,7 +10,7 @@ import {UserProvider, useUser} from '../../server/context.js';
 
 
 const LoginScreen = ({ navigation }) => {
-    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -25,10 +25,10 @@ const LoginScreen = ({ navigation }) => {
   
     useEffect(() => {
       const loadCredentials = async () => {
-        const savedUsername = await AsyncStorage.getItem('username');
+        const savedEmail = await AsyncStorage.getItem('email');
         const savedPassword = await AsyncStorage.getItem('password');
-        if (savedUsername && savedPassword) {
-          setUsername(savedUsername);
+        if (savedEmail && savedPassword) {
+          setEmail(savedEmail);
           setPassword(savedPassword);
         }
       };
@@ -36,9 +36,9 @@ const LoginScreen = ({ navigation }) => {
       loadCredentials();
     }, []);
   
-    const saveCredentials = async (username, password) => {
+    const saveCredentials = async (email, password) => {
       try {
-        await AsyncStorage.setItem('username', username);
+        await AsyncStorage.setItem('email', email);
         await AsyncStorage.setItem('password', password);
       } catch (error) {
         // Error saving data
@@ -46,26 +46,23 @@ const LoginScreen = ({ navigation }) => {
       }
     };
   
-    const handleLogin = () => {
-      server.connectSocket(); 
+    const handleLogin = () => { 
       setLoading(true);
       setError('');
     
-      server.login(username, password)
-        .then((success) => {
-          if (success) {
-            saveCredentials(username, password);
-            auth.login();
-            setLoading(false);
-            setUser(username); 
-          
-            navigation.navigate('sharedproject');
-          }
-        })
-        .catch((errorMessage) => {
+      const loginPromise = login(email, password)
+      loginPromise.then(
+        () => {
+          saveCredentials(email, password);
+          auth.login();
           setLoading(false);
-          setError(errorMessage.toString()); // Convert error to string if it's an object
-        });
+          setUser(email); 
+        
+          navigation.navigate('sharedproject');
+        }, (error) => {
+          setLoading(false);
+          setError(error); 
+        })
     };
   
     const handleCancel = () => {
@@ -85,13 +82,15 @@ const LoginScreen = ({ navigation }) => {
         <Text style={styles.title}>Log In</Text>
         <TextInput
           style={styles.input}
-          placeholder="User Name"
-          value={username}
-          onChangeText={setUsername}
+          placeholder="Email"
+          autoCapitalize='none'
+          value={email}
+          onChangeText={setEmail}
         />
         <TextInput
           style={styles.input}
           placeholder="Password"
+          autoCapitalize='none'
           value={password}
           onChangeText={setPassword}
           secureTextEntry

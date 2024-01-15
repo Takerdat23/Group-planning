@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
 import styles from './styles.js'
-import * as server from '../../server/AuthService.js';
-
+import { signup } from '../../server/AuthService.js';
 
 
 const SignUpScreen = ({ navigation }) => {
@@ -14,24 +13,21 @@ const SignUpScreen = ({ navigation }) => {
   const [error, setError] = useState('');
   
  
-
-
-  const handleSignUp =  () => {
-    server.connectSocket(); 
+  function handleSignUp() {
     setLoading(true);
     setError('');
   
-    server.signup(userName, email, password)
-      .then((success) => {
-        if (success) {
-          setLoading(false);
-          navigation.navigate('Login');
-        }
-      })
-      .catch((errorMessage) => {
+    const signupPromise = signup(userName, email, password)
+    signupPromise.then(
+      () => {
         setLoading(false);
-        setError(errorMessage); 
-      });
+        navigation.navigate('Login');
+      }, 
+      (error) => {
+        // console.log("sigup false")
+        setLoading(false);
+        setError(error); 
+      })
   };
 
   const handleSignIn = () => {
@@ -46,6 +42,7 @@ const SignUpScreen = ({ navigation }) => {
       <TextInput
         style={styles.input}
         placeholder="Dilane321"
+        autoCapitalize='none'
         value={userName}
         onChangeText={setUserName}
       />
@@ -55,6 +52,7 @@ const SignUpScreen = ({ navigation }) => {
       <TextInput
         style={styles.input}
         placeholder="abc@gmail.com"
+        autoCapitalize='none'
         value={email}
         onChangeText={setEmail}
         keyboardType="email-address"
@@ -64,6 +62,7 @@ const SignUpScreen = ({ navigation }) => {
       <TextInput
         style={styles.input}
         placeholder="abc1234567"
+        autoCapitalize='none'
         value={password}
         onChangeText={setPassword}
         secureTextEntry
