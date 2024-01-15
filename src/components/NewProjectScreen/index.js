@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import styles from './styles.js'
 import AuthContext from '../../server/AuthService.js'; 
 import { useUser } from '../../server/context.js'; 
+import * as server from '../../server/AuthService.js';
 
 const NewProjectScreen = ({route, navigation}) => {
     const [projectName, setProjectName] = useState('');
@@ -12,17 +13,15 @@ const NewProjectScreen = ({route, navigation}) => {
     const { user, setUser } = useUser();
   
   
-    const generateKeyWithTimestamp = () => {
-      return new Date().getTime().toString();
-    };
+    //const generateKeyWithTimestamp = () => {
+     // return new Date().getTime().toString();
+    //};
   
     const handleCreate = () => {
       if (projectName.length){
   
-    
-    
       const newProject = { 
-        id: generateKeyWithTimestamp() ,
+        id: '',
         title: projectName, 
         createdAt: new Date(),
         completionStatus: '',
@@ -31,6 +30,8 @@ const NewProjectScreen = ({route, navigation}) => {
         members: [],
         master: user,
       }
+      server.connectSocket();
+      server.newProject(newProject);
       console.log('Project Created:',newProject);
       onProjectSubmit(newProject); 
       navigation.navigate("sharedproject"); 
