@@ -27,17 +27,10 @@ const NewProjectScreen = ({route, navigation}) => {
         master: user,
       }
 
-      const newProjectPromise = newProject(newProjects)
-      newProjectPromise.then(
-        () => {
-          console.log('Project Created:',newProject);
-          onProjectSubmit(newProject); 
-          navigation.goBack(); 
-        },
-        (error) => {
-          console.error("Error creating project:", error);
-        }
-      )
+      newProject(newProjects)
+      console.log('Project Created:',newProjects);
+      onProjectSubmit(newProjects); 
+      navigation.goBack(); 
       
      }
       else{

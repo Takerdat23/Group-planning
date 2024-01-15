@@ -117,7 +117,7 @@ useEffect(() => {
         <Text style={styles.projectCount}>You have {projects.length} projects</Text>
         {projects.map((project, index) => (
         <TouchableOpacity 
-          key={project.id} 
+          key={project?.id} 
           style={styles.projectCard} 
           
           onPress={() => handleProject(project)}
