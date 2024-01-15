@@ -58,7 +58,7 @@ const LoginScreen = ({ navigation }) => {
           setLoading(false);
           setUser(email); 
         
-          navigation.navigate('sharedproject');
+          navigation.navigate('Shared');
         }, (error) => {
           setLoading(false);
           setError(error); 

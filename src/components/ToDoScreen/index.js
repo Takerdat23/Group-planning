@@ -18,7 +18,10 @@ import styles from './styles.js'
     const {Project_id} = route.params; 
     const {Current_project} = route.params ; 
     const {onProjectDelete} = route.params;
+<<<<<<< HEAD
   
+=======
+>>>>>>> 80e98bf1492bd609bce81291d805e5a15e5dd6a4
   
     useEffect(() => {
      
@@ -185,7 +188,11 @@ import styles from './styles.js'
       onProjectDelete(Project_id); 
       navigation.goBack();
     }
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> 80e98bf1492bd609bce81291d805e5a15e5dd6a4
     return (
       
       <View style={styles.container}>
