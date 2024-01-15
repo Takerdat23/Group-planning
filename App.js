@@ -4,6 +4,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 
+
 // Import your screens
 import LoginScreen from './src/components/LoginScreen/index.js';
 import SignUpScreen from './src/components/SignUp/index.js';
@@ -18,20 +19,20 @@ import MemberScreen from './src/components/MembersScreen/index.js'
 import AuthContext from './src/server/AuthService.js';
 import {UserProvider} from './src/server/context.js';
 import {MemberContextProvider} from  './src/server/context.js'; 
+
+
+
+//create tab view 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 
-function StackNavigator() {
+
+const LoginStack = () => {
   return (
-    <Stack.Navigator
-      initialRouteName="PersonalProject"
-      screenOptions={{
-        animation: 'slide_from_right',
-        
-      }}
-    >
-   
+    <Stack.Navigator screenOptions={{ headerShown: true }}>
+      <Stack.Screen name="Login" component={LoginScreen} />
+
       <Stack.Screen
         name="SignUp"
         component={SignUpScreen}
@@ -40,15 +41,16 @@ function StackNavigator() {
           headerShown: false,
         })}
       />
-      <Stack.Screen
-        name="Login"
-        component={LoginScreen}
-        options={({ route }) => ({
-          tabBarStyle: { display: getTabBarVisibility(route) },
-          headerShown: false,
-        })}
-      />
+      {/* Add other screens that should be part of the login flow if necessary */}
+    </Stack.Navigator>
+  );
+};
 
+
+
+const PersonalStack = () => {
+  return (
+    <Stack.Navigator initialRouteName="PersonalProject" screenOptions={{ headerShown: true }}>
       <Stack.Screen
         name="HelloWorld"
         component={HelloWorldScreen}
@@ -94,15 +96,14 @@ function StackNavigator() {
         })}
       />
 
-      <Stack.Screen
-        name="sharedTasks"
-        component={SharedTaskScreen}
-        options={({ route }) => ({
-          tabBarStyle: { display: getTabBarVisibility(route) },
-      
-        })}
-      />
+    </Stack.Navigator>
+  );
+};
 
+
+const SharedStack = () => {
+  return (
+    <Stack.Navigator initialRouteName="SharedProjects" screenOptions={{ headerShown: true }}>
       <Stack.Screen
         name="sharedproject"
         component={SharedProjectsScreen}
@@ -112,7 +113,26 @@ function StackNavigator() {
         })}
       />
 
-      <Stack.Screen
+
+    <Stack.Screen
+        name="sharedTasks"
+        component={SharedTaskScreen}
+        options={({ route }) => ({
+          tabBarStyle: { display: getTabBarVisibility(route) },
+      
+        })}
+      />
+
+    <Stack.Screen
+        name="NewProject"
+        component={NewProjectScreen}
+        options={({ route }) => ({
+          tabBarStyle: { display: getTabBarVisibility(route) },
+      
+        })}
+      />
+
+    <Stack.Screen
         name="member list"
         component={MemberScreen}
         options={({ route }) => ({
@@ -120,11 +140,20 @@ function StackNavigator() {
      
         })}
       />
-
-      
+      <Stack.Screen
+        name="ProfileScreen"
+        component={ProfileScreen}
+        options={({ route }) => ({
+          tabBarStyle: { display: getTabBarVisibility(route) },
+        
+        })}
+      />
+      {/* Add other screens relevant to the Shared tab */}
     </Stack.Navigator>
   );
-}
+};
+
+
 
 
 const getTabBarVisibility = (route) => {
@@ -148,7 +177,7 @@ const App = () => {
   };
   
 
-
+  
   return (
     <MemberContextProvider>
     <UserProvider>
@@ -158,6 +187,10 @@ const App = () => {
         screenOptions={({ route }) => ({
           tabBarIcon: ({ focused, color, size }) => {
             let iconName;
+
+            const scale = focused ? 1.2 : 1; // Scale up if focused
+            const translateY = focused ? -10 : 0; // Move up if focused
+
 
             if (route.name === 'Home') {
               iconName = focused ? 'home' : 'home-outline';
@@ -170,34 +203,21 @@ const App = () => {
             } else if (route.name === 'Settings') {
               iconName = focused ? 'settings' : 'settings-outline';
             }
+            
 
             // Return the icon component
-            return <Ionicons name={iconName} size={size} color={color} />;
+            return (<Ionicons name={iconName} size={size} color={color} />);
           },
-          tabBarActiveTintColor: 'blue',
-          tabBarInactiveTintColor: 'gray',
         })}
       >
        
-        <Tab.Screen name="Personal" component={StackNavigator} />
+        <Tab.Screen name="Personal" component={PersonalStack} />
+
         <Tab.Screen 
-          name="Shared" 
-          component={SharedProjectsScreen} 
-          listeners={({ navigation }) => ({
-            tabPress: event => {
-             
-              event.preventDefault();
-              console.log(loggedIn); 
-              if (!loggedIn) {
-      
-                navigation.navigate('Login');
-              } else {
-                
-                navigation.navigate('Shared');
-              }
-            },
-          })}
-        />
+                name="Shared" 
+                component={loggedIn ? SharedStack : LoginStack} 
+              />
+
         <Tab.Screen name="Profile" component={ProfileScreen} />
         {/* Add other Tab.Screen components as needed */}
       </Tab.Navigator>
