@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Image } from 'react-native';
+import { useIsFocused } from '@react-navigation/native';
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from './styles.js'
-
+import { getProjects, deleteProject } from '../../server/AuthService.js';
 
 
 const getRelativeTime = (date) => {
@@ -21,17 +22,19 @@ const getRelativeTime = (date) => {
 
 const PersonalProject = ({ navigation }) => {
   const [projects, setProjects] = useState([]);
+  const isFocused = useIsFocused();
 
-
-  
-
-  useEffect(() => {
+useEffect(() => {
+  if (isFocused){
     loadProjects();
-  }, []);
+  }
+}, [isFocused]);
 
   useEffect(() => {
-    storeProjects(projects);
-  }, [projects]);
+    if(isFocused){
+      storeProjects(projects);
+    }
+  }, [isFocused, projects]);
 
 
 
@@ -47,9 +50,12 @@ const PersonalProject = ({ navigation }) => {
 
   const loadProjects = async () => {
     try {
-      const projectsString = await AsyncStorage.getItem('Projects');
-      if (projectsString !== null) {
-        setProjects(JSON.parse(projectsString));
+      getProjects().then((projects) => {
+        setProjects(projects);
+      });
+      const localProjects = await AsyncStorage.getItem('Projects');
+      if (localProjects !== null) {
+        setProjects(JSON.parse(localProjects));
       }
     } catch (e) {
       console.error("Error loading tasks", e);
@@ -82,6 +88,11 @@ const PersonalProject = ({ navigation }) => {
   };
 
 
+  const handleDeleteProjects = (id) => {
+    const updatedproject = projects.filter(project => project.id !== id);
+    setProjects(updatedproject);
+    deleteProject(id);
+  }
 
   const handleNewProject = () => {
     navigation.navigate('NewProject', {
@@ -95,6 +106,7 @@ const PersonalProject = ({ navigation }) => {
       Current_project: project , 
       Project_id: project.id, 
       onNewTaskCompletion: handleUpdateProjects,
+      onProjectDelete: handleDeleteProjects,
     }); 
    
   };
@@ -105,7 +117,7 @@ const PersonalProject = ({ navigation }) => {
         <Text style={styles.projectCount}>You have {projects.length} projects</Text>
         {projects.map((project, index) => (
         <TouchableOpacity 
-          key={project.id} 
+          key={project?.id} 
           style={styles.projectCard} 
           
           onPress={() => handleProject(project)}
