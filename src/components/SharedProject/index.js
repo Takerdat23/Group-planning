@@ -3,6 +3,7 @@ import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Image, Modal, Tex
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {MemberIndicator, saveMembersToStorage, getMemberByNameFromStorage, getRandomColor } from './utils';
+import {useMembers} from '../../server/context'; 
 import styles from './styles'
 
 
@@ -29,6 +30,7 @@ const SharedProjectsScreen = ({ navigation }) => {
   const [newMemberName, setNewMemberName] = useState('');
   const [members, setMembers] = useState([]);
   const [selectedProjectTitle, setSelectedProjectTitle] = useState(null);
+  const {Memberlist, setMemberlist} = useMembers();
 
  
 
@@ -48,6 +50,12 @@ const SharedProjectsScreen = ({ navigation }) => {
 
   }, [projects]);
 
+
+  useEffect(() => {
+    storeMembers(members);
+
+  }, [members]);
+
   const openAddMemberModal = (projectTitle) => {
     setSelectedProjectTitle(projectTitle);
     setModalVisible(true);
@@ -62,12 +70,22 @@ const SharedProjectsScreen = ({ navigation }) => {
     }
   };
 
+
+  const storeMembers = async (members) => {
+    try {
+      setMemberlist(members); 
+      const memberString = JSON.stringify(members);
+      await AsyncStorage.setItem('ShareMembers', memberString);   
+    } catch (e) {
+      console.error("Error saving members", e);
+    }
+  };
+  
+
+
+
   const storeProjects = async (projects) => {
     try {
-      
-      const memberString = JSON.stringify(members);
-      await AsyncStorage.setItem('ShareMembers', memberString);
-
       const tasksString = JSON.stringify(projects);
     
       await AsyncStorage.setItem('ShareProjects', tasksString);
@@ -85,6 +103,7 @@ const SharedProjectsScreen = ({ navigation }) => {
       
       if (projectsString !== null) {
         setProjects(JSON.parse(projectsString));
+        
        
       }
     } catch (e) {
@@ -96,10 +115,11 @@ const SharedProjectsScreen = ({ navigation }) => {
     try {
       const memberString = await AsyncStorage.getItem('ShareMembers');
       setMembers(JSON.parse(memberString));
+      
     } catch (e) {
     console.error("Error loading tasks", e);
   }
-  }
+  };
 
   
 
@@ -114,6 +134,7 @@ const SharedProjectsScreen = ({ navigation }) => {
               name: newMemberName, 
               memberColor: getRandomColor()
             };
+        
             setMembers([...members, newMember]);    
             project.members.push(newMemberName); 
           }
@@ -136,17 +157,20 @@ const SharedProjectsScreen = ({ navigation }) => {
 
 
 
-  const handleUpdateProjects = (id, newProjectcompletion) => {
-    console.log(newProjectcompletion); 
-    const updatedproject = projects.map(project => {
-      if (project.id === id) {
-        return { ...project, completionStatus: newProjectcompletion };
-      }
-      return project;
+  const handleUpdateProjects = (id, updatedProject) => {
+ 
+    
+    setProjects(projects => { 
+      return projects.map(proj => {
+      
+        if (proj.id === id) {
+          return updatedProject;
+        }
+       
+        return proj;
+      });
     });
-    setProjects(updatedproject);
   };
-
 
 
   const handleNewProject = () => {
@@ -156,11 +180,18 @@ const SharedProjectsScreen = ({ navigation }) => {
    
   };
 
+  const handleDeleteProject = (Project_to_delete_id) => {
+     const updated_projects = projects.filter(project => project.id !== Project_to_delete_id ); 
+     setProjects(updated_projects); 
+     navigation.goBack(); 
+  };
+
   const handleProject = (project) => {
     navigation.navigate("sharedTasks", {
       Current_project: project , 
       Project_id: project.id, 
       onNewTaskCompletion: handleUpdateProjects,
+      onDeleteCall : handleDeleteProject, 
     }); 
    
   };
@@ -170,7 +201,7 @@ const SharedProjectsScreen = ({ navigation }) => {
     for(x in project.members){
 
       const member = members.find(m => m.name === project.members[x]);
-      console.log(project.members); 
+  
       memberList.push(member); 
     }
     return memberList;

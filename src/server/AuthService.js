@@ -16,7 +16,7 @@ let socket; // Declare socket variable at the module level to maintain its scope
 export const connectSocket = () => {
   console.log("Attempting to connect to server...");
   // change the ip address according to your device 
-  socket = io('http://192.168.13.2:4000'); 
+  socket = io('http://192.168.13.3:4000'); 
 
   socket.on('connect', () => {
     console.log('Connected to server');

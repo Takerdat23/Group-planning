@@ -4,6 +4,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons'; 
 import {getStatusStyle, getRelativeTime} from './utils.js'
+import {useUser, useMembers } from '../../server/context.js'
 import styles from './styles.js'
 
 
@@ -14,10 +15,12 @@ import styles from './styles.js'
     const [editingTaskKey, setEditingTaskKey] = useState(null);
     const [newTaskModalVisible, setNewTaskModalVisible] = useState(false);
     const [settingModalVisible, setSettingModalVisible] = useState(false);
+    const [editMemberVisible, setEditMemberVisible] = useState(false);
     const [newTaskText, setNewTaskText] = useState('');
-    const {onNewTaskCompletion }= route.params; 
-    const {Project_id} = route.params; 
-    const {Current_project} = route.params ; 
+    const {Current_project, Project_id, onNewTaskCompletion, onDeleteCall} = route.params ; 
+    const [project , setProject] = useState(Current_project); 
+    const {user , setUser} = useUser(); 
+    const {Memberlist, setMemberlist} = useMembers();
   
   
     useEffect(() => {
@@ -41,11 +44,27 @@ import styles from './styles.js'
   
       });
     }, [navigation]);
+
+    useEffect(()=> { 
+      if (Current_project.master != user){ 
+        setEditMemberVisible(false); 
+      
+      }
+      else { 
+        setEditMemberVisible(true); 
+      }
+    });
   
   
     const handleSettingsPress = () => {
       setSettingModalVisible(true); 
     };
+
+
+    useEffect(() => {
+    }, [project]);
+
+    
   
   
     useEffect(() => {
@@ -67,32 +86,66 @@ import styles from './styles.js'
         return statusOrder[a.status] - statusOrder[b.status];
       });
     };
-  
-    
-    function getRandomColor() {
-      const letters = '0123456789ABCDEF';
-      let color = '#';
-      for (let i = 0; i < 6; i++) {
-        color += letters[Math.floor(Math.random() * 16)];
-      }
-      return color;
-    }
+//Send completion status to shareproject screen 
     const setProjectChanges = () => {
       
       const tasksCompletion=  getCompletionStatus(); 
+      Current_project.completionStatus = tasksCompletion; 
       
-      onNewTaskCompletion(Project_id, tasksCompletion)
-    }
-
-    const handleDeleteMember = () =>{
-
+      onNewTaskCompletion(Project_id, Current_project);
     };
-    const handleRemoveTask =  (id) => {
-      console.log("removed"); 
-      const newtasks = tasks.filter((item) => item.key !== id);
-      setTasks(newtasks);
-      setProjectChanges();
-    }
+
+
+    const handleDeleteProject = () => {
+      Alert.alert(
+        "Delete Project",
+        "Are you sure you want to delete this project?",
+        [
+          {
+            text: "Cancel",
+            onPress: () => console.log("Cancel Pressed"),
+            style: "cancel"
+          },
+          {
+            text: "OK",
+            onPress: () => {
+              console.log("OK Pressed, delete the project");
+              onDeleteCall(Current_project.id);
+            }
+          }
+        ],
+        { cancelable: false }
+      );
+    };
+
+
+    // Member editing section 
+
+
+
+    //Send delete members to shareproject screen 
+    const handleDeleteMember = (userName) =>{
+
+     const updatedMembers = Current_project.members.filter(member => member !== userName);
+     Current_project.members = updatedMembers
+     onNewTaskCompletion(Project_id, Current_project);
+    };
+
+    
+
+
+    const handleEditmember =() => { 
+      const currentProj_member_list = Current_project.members; 
+      const ProjectMembers_Instances =  Memberlist.filter(member => currentProj_member_list.includes(member.name)); 
+      // navigate to member list 
+      navigation.navigate("member list", {
+      member_list: ProjectMembers_Instances, 
+      onMemberChange: handleDeleteMember
+      }); 
+    };
+
+
+    // Edit task section
   
   
     const storeTasks = async (tasks) => {
@@ -148,6 +201,13 @@ import styles from './styles.js'
       
     };
 
+    const handleRemoveTask =  (id) => {
+      console.log("removed"); 
+      const newtasks = tasks.filter((item) => item.key !== id);
+      setTasks(newtasks);
+      setProjectChanges();
+    }; 
+
 
     
   
@@ -172,7 +232,7 @@ import styles from './styles.js'
     const getCompletionStatus= ()=> { 
       const DoneTasks = tasks.filter(item => item.status === 'Done');
       const DoneTasksCount = DoneTasks.length;
-      console.log(DoneTasksCount); 
+     
   
       return  DoneTasksCount.toString()+ "/" + tasks.length.toString()+  " completed";
     }; 
@@ -293,17 +353,18 @@ import styles from './styles.js'
             <View style={styles.modalContent}>
               <TouchableOpacity
                 style={styles.option }
-                onPress={() => console.log("pressed")}
+                onPress={() => handleDeleteProject()}
               >
                 <Text style={styles.optionText}>Delete project</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity
-                style={styles.option }
-                onPress={() => console.log("pressed")}
-              >
-                <Text style={styles.optionText}>Edit members</Text>
-              </TouchableOpacity>
+              {editMemberVisible && (
+                  <TouchableOpacity
+                    style={styles.option}
+                    onPress={() => handleEditmember()}
+                  >
+                  <Text style={styles.optionText}>Edit members</Text>
+                  </TouchableOpacity>)}
 
             </View>
           </TouchableOpacity>

@@ -14,8 +14,10 @@ import NewProjectScreen from './src/components/NewProjectScreen/index.js'
 import TaskScreen from './src/components/ToDoScreen/index.js'
 import SharedProjectsScreen from './src/components/SharedProject/index.js'
 import SharedTaskScreen from './src/components/SharedTask/index.js'
+import MemberScreen from './src/components/MembersScreen/index.js'
 import AuthContext from './src/server/AuthService.js';
 import {UserProvider} from './src/server/context.js';
+import {MemberContextProvider} from  './src/server/context.js'; 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -109,6 +111,17 @@ function StackNavigator() {
      
         })}
       />
+
+      <Stack.Screen
+        name="member list"
+        component={MemberScreen}
+        options={({ route }) => ({
+          tabBarStyle: { display: getTabBarVisibility(route) },
+     
+        })}
+      />
+
+      
     </Stack.Navigator>
   );
 }
@@ -137,6 +150,7 @@ const App = () => {
 
 
   return (
+    <MemberContextProvider>
     <UserProvider>
     <AuthContext.Provider value={authContextValue}>
     <NavigationContainer>
@@ -190,6 +204,7 @@ const App = () => {
     </NavigationContainer>
     </AuthContext.Provider>
     </UserProvider>
+    </MemberContextProvider>
   );
 };
 
