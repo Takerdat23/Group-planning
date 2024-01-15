@@ -5,7 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons'; 
 import {getStatusStyle, getRelativeTime} from './utils.js'
 import styles from './styles.js'
-
+import * as server from '../../server/AuthService.js';
 
   const TaskScreen = ({route, navigation}) => {
     const [tasks, setTasks] = useState([]);
@@ -18,6 +18,7 @@ import styles from './styles.js'
     const {onNewTaskCompletion }= route.params; 
     const {Project_id} = route.params; 
     const {Current_project} = route.params ; 
+    const {onProjectDelete} = route.params;
   
   
     useEffect(() => {
@@ -77,12 +78,14 @@ import styles from './styles.js'
       }
       return color;
     }
+
     const setProjectChanges = () => {
       
       const tasksCompletion=  getCompletionStatus(); 
       
       onNewTaskCompletion(Project_id, tasksCompletion)
     }
+
     const handleRemoveTask =  (id) => {
       console.log("removed"); 
       const newtasks = tasks.filter((item) => item.key !== id);
@@ -178,6 +181,11 @@ import styles from './styles.js'
   
     const sortedTasks = sortTasksByStatus(tasks);
     setProjectChanges();
+
+    const deleteProject = async() => {
+      onProjectDelete(Project_id); 
+      navigation.goBack();
+    }
   
     return (
       
@@ -287,7 +295,7 @@ import styles from './styles.js'
             <View style={styles.modalContent}>
               <TouchableOpacity
                 style={styles.option }
-                onPress={() => console.log("pressed")}
+                onPress={deleteProject}
               >
                 <Text style={styles.optionText}>Delete project</Text>
               </TouchableOpacity>
