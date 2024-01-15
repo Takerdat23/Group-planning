@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { Ionicons, MaterialCommunityIcons, FontAwesome } from '@expo/vector-icons';
 import styles from './styles.js'
@@ -6,7 +6,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
 
 const ProfileScreen = () => {
-  const [avatar, setAvatar] = React.useState(null)
+  const [avatar, setAvatar] = useState(null);
+  const [personal, setpersonals] =  useState(null); 
+  const [shares, setshares] = useState(null); 
 
   const setLocalAvatar = async (uri) => {
     try{

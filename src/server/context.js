@@ -41,3 +41,32 @@ export const useMembers = () => {
   }
   return context;
 };
+
+
+// project counts 
+
+const ProjectCountsContext = createContext({
+  Personal_Projects: 0, 
+  Shared_Projects: 0,
+}); 
+
+
+export const ProjectContextProvider = ({ children }) => {
+  const [projectData, setProjectData] = useState({});
+
+  return (
+    <ProjectCountsContext.Provider value={{ projectData, setProjectData }}>
+      {children}
+    </ProjectCountsContext.Provider>
+  );
+};
+
+
+
+export const useProjectsCount = () => {
+  const context = useContext(ProjectCountsContext);
+  if (context === undefined) {
+    throw new Error('useList must be used within a setMemberlist');
+  }
+  return context;
+};
