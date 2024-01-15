@@ -5,7 +5,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons'; 
 import {getStatusStyle, getRelativeTime} from './utils.js'
 import styles from './styles.js'
-import * as server from '../../server/AuthService.js';
 
   const TaskScreen = ({route, navigation}) => {
     const [tasks, setTasks] = useState([]);

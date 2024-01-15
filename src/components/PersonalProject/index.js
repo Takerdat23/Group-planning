@@ -4,7 +4,7 @@ import { useIsFocused } from '@react-navigation/native';
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from './styles.js'
-import * as server from '../../server/AuthService.js';
+import { getProjects, deleteProject } from '../../server/AuthService.js';
 
 
 const getRelativeTime = (date) => {
@@ -50,8 +50,7 @@ useEffect(() => {
 
   const loadProjects = async () => {
     try {
-      server.connectSocket();
-      server.getProjects().then((projects) => {
+      getProjects().then((projects) => {
         setProjects(projects);
       });
       const localProjects = await AsyncStorage.getItem('Projects');
@@ -92,8 +91,7 @@ useEffect(() => {
   const handleDeleteProjects = (id) => {
     const updatedproject = projects.filter(project => project.id !== id);
     setProjects(updatedproject);
-    server.connectSocket(); 
-    server.deleteProject(id);
+    deleteProject(id);
   }
 
   const handleNewProject = () => {
