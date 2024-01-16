@@ -105,7 +105,7 @@ const SharedStack = () => {
   return (
     <Stack.Navigator initialRouteName="SharedProjects" screenOptions={{ headerShown: true }}>
       <Stack.Screen
-        name="sharedproject"
+        name="sharedprojects"
         component={SharedProjectsScreen}
         options={({ route }) => ({
           tabBarStyle: { display: getTabBarVisibility(route) },
