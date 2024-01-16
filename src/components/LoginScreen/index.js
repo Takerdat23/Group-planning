@@ -56,6 +56,7 @@ const LoginScreen = ({ navigation }) => {
           saveCredentials(email, password);
           auth.login();
           setLoading(false);
+       
           setUser(email); 
         
           navigation.navigate('Shared');

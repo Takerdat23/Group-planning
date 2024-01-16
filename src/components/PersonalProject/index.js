@@ -3,7 +3,7 @@ import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Image } from 'rea
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from './styles.js'
-
+import {useProjectsCount} from "../../server/context.js"; 
 
 
 const getRelativeTime = (date) => {
@@ -21,16 +21,22 @@ const getRelativeTime = (date) => {
 
 const PersonalProject = ({ navigation }) => {
   const [projects, setProjects] = useState([]);
+  const {projectData,  updateCount} = useProjectsCount(); 
 
 
   
 
   useEffect(() => {
     loadProjects();
+  
   }, []);
 
   useEffect(() => {
     storeProjects(projects);
+   
+    projectData.Personal_Projects = projects.length ; 
+    updateCount(projectData);
+    
   }, [projects]);
 
 
@@ -59,6 +65,7 @@ const PersonalProject = ({ navigation }) => {
 
   const handleNewProjects = (newProject) => {
     setProjects([...projects, newProject]);
+    
   };
 
   function getRandomColor() {

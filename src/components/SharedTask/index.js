@@ -23,12 +23,21 @@ import styles from './styles.js'
     const {Memberlist, setMemberlist} = useMembers();
 
 
-  
+    const changeSettings = () => { 
+     
+      if (Current_project.master == user){ 
+        return true; 
+      
+      }
+      return false; 
+    }
   
     useEffect(() => {
+
+      
      
       navigation.setOptions({
-        headerRight: () => (
+        headerRight: () => ((changeSettings() && (
           <View>
           <TouchableOpacity onPress={handleSettingsPress}>
             <Ionicons
@@ -41,6 +50,7 @@ import styles from './styles.js'
 
       
           </View>
+          ))
         ),
    
   
@@ -48,12 +58,13 @@ import styles from './styles.js'
     }, [navigation]);
 
     useEffect(()=> { 
-      if (Current_project.master != user){ 
-        setEditMemberVisible(false); 
+    
+      if (Current_project.master == user){ 
+        setEditMemberVisible(true); 
       
       }
       else { 
-        setEditMemberVisible(true); 
+        setEditMemberVisible(false); 
       }
     });
   

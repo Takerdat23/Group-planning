@@ -41,6 +41,15 @@ const LoginStack = () => {
           headerShown: false,
         })}
       />
+
+    <Stack.Screen
+        name="ProfileScreen"
+        component={ProfileScreen}
+        options={({ route }) => ({
+          tabBarStyle: { display: getTabBarVisibility(route) },
+        
+        })}
+      />
       {/* Add other screens that should be part of the login flow if necessary */}
     </Stack.Navigator>
   );
@@ -148,6 +157,8 @@ const SharedStack = () => {
         
         })}
       />
+
+   
       {/* Add other screens relevant to the Shared tab */}
     </Stack.Navigator>
   );
