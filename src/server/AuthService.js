@@ -1,5 +1,6 @@
 import io from 'socket.io-client';
 import React from 'react';
+ 
 
 const AuthContext = React.createContext({
   loggedIn: false,
@@ -50,6 +51,8 @@ export function signup(username, email, password) {
   })
 };
 
+
+
 export function login(email, password) {
   const userData = {
     email: email, 
@@ -60,17 +63,21 @@ export function login(email, password) {
 
   return new Promise((resolve, reject) => {
     socket.on("user log", (message) => {
+    
       if(message == "Login successful")
         resolve()
       else
         reject(message)
       socket.off("user log")
-    })
+    });
+
+    
   })
 };
 
 
 export const getUser = () => { 
+
   return new Promise((resolve)=> { 
     if (!socket) {
       console.warn("Socket not connected");
@@ -79,18 +86,19 @@ export const getUser = () => {
     }
 
     const getusername = (text) => { 
-      if (!text){ 
-        console.log(text); 
+ 
+      if (text){ 
+
         resolve(text); 
       }
       else{ 
         console.log("Returned null user"); 
       }
       
-      socket.off('user change', getusername); 
+      socket.off("user change", getusername); 
     }
 
-    socket.on('user change', getusername); 
+    socket.on("user change", getusername); 
   }); 
 
   ; 

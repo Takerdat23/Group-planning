@@ -4,7 +4,6 @@ import { Ionicons } from '@expo/vector-icons';
 import styles from './styles.js'
 import AuthContext from '../../server/AuthService.js'; 
 import { useUser } from '../../server/context.js'; 
-import { newProject } from '../../server/AuthService.js';
 
 const NewProjectScreen = ({route, navigation}) => {
     const [projectName, setProjectName] = useState('');
@@ -13,11 +12,17 @@ const NewProjectScreen = ({route, navigation}) => {
     const { user, setUser } = useUser();
   
   
-    const handleCreate = async() => {
+    const generateKeyWithTimestamp = () => {
+      return new Date().getTime().toString();
+    };
+  
+    const handleCreate = () => {
       if (projectName.length){
   
-      const newProjects = { 
-        id: '' ,
+    
+    
+      const newProject = { 
+        id: generateKeyWithTimestamp() ,
         title: projectName, 
         createdAt: new Date(),
         completionStatus: '',
@@ -26,12 +31,9 @@ const NewProjectScreen = ({route, navigation}) => {
         members: [],
         master: user,
       }
-
-      newProject(newProjects)
-      console.log('Project Created:',newProjects);
-      onProjectSubmit(newProjects); 
-      navigation.goBack(); 
-      
+      console.log('Project Created:',newProject);
+      onProjectSubmit(newProject); 
+      navigation.goBack();  
      }
       else{
   
@@ -54,8 +56,6 @@ const NewProjectScreen = ({route, navigation}) => {
       navigation.goBack(); 
       console.log('Creation Cancelled');
     };
-
-
   
     return (
       <View style={styles.container}>

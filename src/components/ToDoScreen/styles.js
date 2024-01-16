@@ -214,7 +214,24 @@ const styles = StyleSheet.create({
       borderWidth: 1,
       borderColor: '#ddd',
       borderRadius: 5
-    }
+    },
+
+    deleteOption: {
+   
+      borderRadius: 5,
+      padding: 10,
+      elevation: 2,
+      backgroundColor: "#F66748", 
+      marginBottom: 10, 
+      
+    }, 
+
+    optionText: {
+      textAlign: 'center',
+      fontSize: 20,
+      color: 'white', 
+    },
+
   });
   
 export default styles;

@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Image } from 'react-native';
-import { useIsFocused } from '@react-navigation/native';
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from './styles.js'
-import { getProjects, deleteProject } from '../../server/AuthService.js';
+import {useProjectsCount} from "../../server/context.js"; 
 
 
 const getRelativeTime = (date) => {
@@ -22,19 +21,23 @@ const getRelativeTime = (date) => {
 
 const PersonalProject = ({ navigation }) => {
   const [projects, setProjects] = useState([]);
-  const isFocused = useIsFocused();
+  const {projectData,  updateCount} = useProjectsCount(); 
 
-useEffect(() => {
-  if (isFocused){
-    loadProjects();
-  }
-}, [isFocused]);
+
+  
 
   useEffect(() => {
-    if(isFocused){
-      storeProjects(projects);
-    }
-  }, [isFocused, projects]);
+    loadProjects();
+  
+  }, []);
+
+  useEffect(() => {
+    storeProjects(projects);
+   
+    projectData.Personal_Projects = projects.length ; 
+    updateCount(projectData);
+    
+  }, [projects]);
 
 
 
@@ -50,12 +53,9 @@ useEffect(() => {
 
   const loadProjects = async () => {
     try {
-      getProjects().then((projects) => {
-        setProjects(projects);
-      });
-      const localProjects = await AsyncStorage.getItem('Projects');
-      if (localProjects !== null) {
-        setProjects(JSON.parse(localProjects));
+      const projectsString = await AsyncStorage.getItem('Projects');
+      if (projectsString !== null) {
+        setProjects(JSON.parse(projectsString));
       }
     } catch (e) {
       console.error("Error loading tasks", e);
@@ -65,6 +65,7 @@ useEffect(() => {
 
   const handleNewProjects = (newProject) => {
     setProjects([...projects, newProject]);
+    
   };
 
   function getRandomColor() {
@@ -77,7 +78,7 @@ useEffect(() => {
   }
 
   const handleUpdateProjects = (id, newProjectcompletion) => {
-    console.log(newProjectcompletion); 
+   
     const updatedproject = projects.map(project => {
       if (project.id === id) {
         return { ...project, completionStatus: newProjectcompletion };
@@ -88,11 +89,6 @@ useEffect(() => {
   };
 
 
-  const handleDeleteProjects = (id) => {
-    const updatedproject = projects.filter(project => project.id !== id);
-    setProjects(updatedproject);
-    deleteProject(id);
-  }
 
   const handleNewProject = () => {
     navigation.navigate('NewProject', {
@@ -101,12 +97,19 @@ useEffect(() => {
    
   };
 
+  const handleDeleteProject = (Project_to_delete_id) => {
+    const updated_projects = projects.filter(project => project.id !== Project_to_delete_id ); 
+    setProjects(updated_projects); 
+    navigation.goBack(); 
+ };
+
+
   const handleProject = (project) => {
     navigation.navigate("todolist", {
       Current_project: project , 
       Project_id: project.id, 
       onNewTaskCompletion: handleUpdateProjects,
-      onProjectDelete: handleDeleteProjects,
+      onDeleteCall: handleDeleteProject, 
     }); 
    
   };
@@ -117,7 +120,7 @@ useEffect(() => {
         <Text style={styles.projectCount}>You have {projects.length} projects</Text>
         {projects.map((project, index) => (
         <TouchableOpacity 
-          key={project?.id} 
+          key={project.id} 
           style={styles.projectCard} 
           
           onPress={() => handleProject(project)}

@@ -1,7 +1,9 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
 
-const UserContext = createContext('');
+//user context
+
+const UserContext = createContext({});
 
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(''); 
@@ -36,6 +38,60 @@ export const MemberContextProvider = ({ children }) => {
 
 export const useMembers = () => {
   const context = useContext(MemberContext);
+  if (context === undefined) {
+    throw new Error('useList must be used within a setMemberlist');
+  }
+  return context;
+};
+
+
+// project counts 
+
+const ProjectCountsContext = createContext({
+  Personal_Projects: 0, 
+  Shared_Projects: 0,
+}); 
+
+
+async  function fetchLatestCount(newCount) {
+  return Promise.resolve(newCount); 
+}
+
+
+export const ProjectContextProvider = ({ children }) => {
+  const [projectData, setProjectData] = useState({
+                                            Personal_Projects: 0, 
+                                            Shared_Projects: 0,});
+
+
+  // Function to update the count
+  const updateCount = async (newCount) => {
+    setProjectData(newCount);
+  };
+
+  useEffect(() => {
+     
+    const interval = setInterval(() => {
+    
+     
+    }, 1000);
+
+      return () => clearInterval(interval);
+      }, [projectData]);
+
+  
+
+  return (
+    <ProjectCountsContext.Provider value={{ projectData, setProjectData,  updateCount }}>
+      {children}
+    </ProjectCountsContext.Provider>
+  );
+};
+
+
+
+export const useProjectsCount = () => {
+  const context = useContext(ProjectCountsContext);
   if (context === undefined) {
     throw new Error('useList must be used within a setMemberlist');
   }

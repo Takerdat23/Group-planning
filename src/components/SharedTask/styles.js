@@ -53,11 +53,13 @@ const styles = StyleSheet.create({
       padding: 20, // Increased padding
       borderRadius: 20,
       backgroundColor: '#FFF', 
-      shadowColor: '#000', // These shadow properties are for iOS
+      shadowColor: '#000', 
       shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.25,
-      shadowRadius: 3.84,
-      elevation: 5, // This is for Android
+      shadowOpacity: 0.5,
+      shadowRadius: 4,
+      elevation: 5,
+      marginBottom: 10, 
+   
     },
     title: {
       fontSize: 20,
@@ -106,10 +108,19 @@ const styles = StyleSheet.create({
       borderBottomColor: '#eee',
     },
     taskText: {
-      fontSize: 16,
+      fontSize: 20,
       flex: 1, 
       marginRight: 10, 
     },
+
+    assignedMemberText: {
+      fontSize: 14,
+      color: 'gray', // Use whatever color you prefer
+      paddingBottom: 10, // Adjust the padding as needed
+      marginBottom: 10, 
+
+    },
+
     taskStatus: {
       backgroundColor: '#ddd',
       borderRadius: 10,
@@ -247,7 +258,11 @@ const styles = StyleSheet.create({
       padding: 10,
       elevation: 2,
       backgroundColor: "#2196F3"
-    },  
+    }, 
+  
+    
+
+    
   });
   
 export default styles;

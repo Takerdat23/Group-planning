@@ -61,12 +61,12 @@ const styles = StyleSheet.create({
   manageAccount: {
     paddingVertical: 15,
     alignItems: 'center',
-    backgroundColor: '#EAEAEA',
-    marginVertical: 10,
+    backgroundColor: '#F67171',
+    marginVertical: 150,
   },
   manageAccountText: {
     fontSize: 18,
-    color: '#000000',
+    color: '#FFFFFF',
   },
   navigation: {
     flexDirection: 'row',

@@ -6,6 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import {getStatusStyle, getRelativeTime} from './utils.js'
 import styles from './styles.js'
 
+
   const TaskScreen = ({route, navigation}) => {
     const [tasks, setTasks] = useState([]);
     const [modalVisible, setModalVisible] = useState(false);
@@ -17,8 +18,9 @@ import styles from './styles.js'
     const {onNewTaskCompletion }= route.params; 
     const {Project_id} = route.params; 
     const {Current_project} = route.params ; 
-    const {onProjectDelete} = route.params;
-
+    const {onDeleteCall} = route.params; 
+  
+  
     useEffect(() => {
      
       navigation.setOptions({
@@ -75,7 +77,30 @@ import styles from './styles.js'
         color += letters[Math.floor(Math.random() * 16)];
       }
       return color;
-    }
+    };
+
+
+    const handleDeleteProject = () => {
+      Alert.alert(
+        "Delete Project",
+        "Are you sure you want to delete this project?",
+        [
+          {
+            text: "Cancel",
+            onPress: () => console.log("Cancel Pressed"),
+            style: "cancel"
+          },
+          {
+            text: "OK",
+            onPress: () => {
+              console.log("OK Pressed, delete the project");
+              onDeleteCall(Current_project.id);
+            }
+          }
+        ],
+        { cancelable: false }
+      );
+    };
 
     const setProjectChanges = () => {
       
@@ -83,13 +108,12 @@ import styles from './styles.js'
       
       onNewTaskCompletion(Project_id, tasksCompletion)
     }
-
     const handleRemoveTask =  (id) => {
       console.log("removed"); 
       const newtasks = tasks.filter((item) => item.key !== id);
       setTasks(newtasks);
       setProjectChanges();
-    }
+    };
   
   
     const storeTasks = async (tasks) => {
@@ -179,12 +203,7 @@ import styles from './styles.js'
   
     const sortedTasks = sortTasksByStatus(tasks);
     setProjectChanges();
-
-    const deleteProject = async() => {
-      onProjectDelete(Project_id); 
-      navigation.goBack();
-    }
-
+  
     return (
       
       <View style={styles.container}>
@@ -292,8 +311,8 @@ import styles from './styles.js'
           >
             <View style={styles.modalContent}>
               <TouchableOpacity
-                style={styles.option }
-                onPress={deleteProject}
+                style={styles.deleteOption }
+                onPress={() => handleDeleteProject()}
               >
                 <Text style={styles.optionText}>Delete project</Text>
               </TouchableOpacity>

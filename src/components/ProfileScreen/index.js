@@ -1,12 +1,26 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState,  useCallback ,useContext} from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { Ionicons, MaterialCommunityIcons, FontAwesome } from '@expo/vector-icons';
 import styles from './styles.js'
+import { getUser } from '../../server/AuthService.js';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
+import {useProjectsCount} from "../../server/context.js"; 
+import {UserProvider, useUser} from '../../server/context.js'; 
+import AuthContext from '../../server/AuthService.js'; 
 
-const ProfileScreen = () => {
-  const [avatar, setAvatar] = React.useState(null)
+const ProfileScreen = ({ navigation }) => {
+  const [avatar, setAvatar] = useState(null);
+  const [personal, setpersonals] =  useState(0); 
+  const [shares, setshares] = useState(0); 
+  const {projectData, updateCount, setProjectData} = useProjectsCount(); 
+  const { user, setUser } = useUser();
+  const [userData , setuserData] = useState(''); 
+  const auth = useContext(AuthContext);
+
+  const [LogOutButtonVisible , setLogOutButton] = useState(false); 
+
 
   const setLocalAvatar = async (uri) => {
     try{
@@ -38,6 +52,44 @@ const ProfileScreen = () => {
             setLocalAvatar(avatar)
           }}
     )()}, [])
+
+
+  useEffect(() => {
+    if(auth.loggedIn== true){ 
+      setLogOutButton(true); 
+    }
+    else { 
+      setLogOutButton(false); 
+    }
+  }, [auth.loggedIn]);
+
+
+    useFocusEffect(
+      useCallback(() => {
+        setProjectData(projectData);
+        setpersonals(projectData.Personal_Projects); 
+        setshares(projectData.Shared_Projects); 
+  
+        return ()=> {
+      
+        };
+      }, [projectData])
+    );
+
+ 
+
+    useFocusEffect(
+      useCallback(() => {
+      getUser()
+        .then(data => {
+          console.log( data);
+          setuserData(data.userName); 
+      })
+    }, [userData])); 
+
+   
+
+
   
   
   const handleChangeAvatar = async() => {
@@ -60,6 +112,20 @@ const ProfileScreen = () => {
       setLocalAvatar(imgURL)
     }
   }
+
+  const emailName= () => { 
+    if(auth.loggedIn){ 
+      return user; 
+    }
+    else{ 
+      return "Please login to get the shared project data";
+    }
+  }
+
+  const handleLogOut= () => { 
+    auth.logout(); 
+    navigation.goBack(); 
+  }; 
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
@@ -80,8 +146,8 @@ const ProfileScreen = () => {
             )
           }
         </TouchableOpacity>
-        <Text style={styles.profileName}>Dilane3</Text>
-        <Text style={styles.profileEmail}>abc123@gmail.com</Text>
+        <Text style={styles.profileName}>{user.userName}</Text>
+        <Text style={styles.profileEmail}>{ emailName() }</Text>
       </View>
       
       <View style={styles.statisticsSection}>
@@ -89,18 +155,23 @@ const ProfileScreen = () => {
         
         <View style={styles.statisticsItem}>
           <Text style={styles.statisticsItemTitle}>Personal Projects</Text>
-          <Text style={styles.statisticsItemValue}>You have 2 personal projects</Text>
+          <Text style={styles.statisticsItemValue}>You have {personal} personal projects</Text>
         </View>
         
         <View style={styles.statisticsItem}>
           <Text style={styles.statisticsItemTitle}>Shared Projects</Text>
-          <Text style={styles.statisticsItemValue}>You have 1 shared project</Text>
+          <Text style={styles.statisticsItemValue}>You have {shares} shared project</Text>
         </View>
+
+       
       </View>
+      {LogOutButtonVisible && (
+      <TouchableOpacity  style={styles.manageAccount} onPress={() => handleLogOut()}>
+        <Text style={styles.manageAccountText}>Log out</Text>
+      </TouchableOpacity>)}
       
-      <TouchableOpacity style={styles.manageAccount}>
-        <Text style={styles.manageAccountText}>Manage Account</Text>
-      </TouchableOpacity>
+      
+    
       
   
     </ScrollView>

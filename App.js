@@ -18,7 +18,7 @@ import SharedTaskScreen from './src/components/SharedTask/index.js'
 import MemberScreen from './src/components/MembersScreen/index.js'
 import AuthContext from './src/server/AuthService.js';
 import {UserProvider} from './src/server/context.js';
-import {MemberContextProvider} from  './src/server/context.js'; 
+import {MemberContextProvider, ProjectContextProvider} from  './src/server/context.js'; 
 
 
 
@@ -39,6 +39,15 @@ const LoginStack = () => {
         options={({ route }) => ({
           tabBarStyle: { display: getTabBarVisibility(route) },
           headerShown: false,
+        })}
+      />
+
+    <Stack.Screen
+        name="ProfileScreen"
+        component={ProfileScreen}
+        options={({ route }) => ({
+          tabBarStyle: { display: getTabBarVisibility(route) },
+        
         })}
       />
       {/* Add other screens that should be part of the login flow if necessary */}
@@ -148,6 +157,8 @@ const SharedStack = () => {
         
         })}
       />
+
+   
       {/* Add other screens relevant to the Shared tab */}
     </Stack.Navigator>
   );
@@ -179,6 +190,7 @@ const App = () => {
 
   
   return (
+    <ProjectContextProvider>
     <MemberContextProvider>
     <UserProvider>
     <AuthContext.Provider value={authContextValue}>
@@ -225,6 +237,7 @@ const App = () => {
     </AuthContext.Provider>
     </UserProvider>
     </MemberContextProvider>
+    </ProjectContextProvider>
   );
 };
 
