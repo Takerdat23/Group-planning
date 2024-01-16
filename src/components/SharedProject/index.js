@@ -128,10 +128,10 @@ const SharedProjectsScreen = ({ navigation }) => {
 
   const addMemberToProject = (projectTitle, newMemberName) => {
     setProjects(projects.map(project => {
-      // Check if this is the project to which we want to add a member
+      
       if (project.title === projectTitle) {
       
-        if (!project.members.some(member => member.name === newMemberName)) {
+        if (!project.members.includes(newMemberName)) {
           if(!members.some(member => member.name === newMemberName)){
             const newMember = { 
               name: newMemberName, 
@@ -141,11 +141,11 @@ const SharedProjectsScreen = ({ navigation }) => {
             setMembers([...members, newMember]);    
             project.members.push(newMemberName); 
           }
-          else{   
-            project.members.push(newMemberName);    
-          }    
-          
+          else { 
+            project.members.push(newMemberName);  
+          }
         }
+    
       }
     
       return project;
