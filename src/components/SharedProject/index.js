@@ -7,7 +7,7 @@ import {useMembers} from '../../server/context';
 import styles from './styles'
 import {useProjectsCount} from "../../server/context.js"; 
 import { addProject } from '../../server/AuthService.js';
-import AuthContext from '../../server/AuthService.js';
+import { useUser } from '../../server/context';
 
 
 
@@ -33,11 +33,10 @@ const SharedProjectsScreen = ({ navigation }) => {
   const [selectedProjectTitle, setSelectedProjectTitle] = useState(null);
   const {Memberlist, setMemberlist} = useMembers();
   const {projectData,  updateCount} = useProjectsCount(); 
-
-  auth = useContext(AuthContext)
+  const { user, setUser, userData, setUserData} = useUser()
 
   useEffect(() => {
-  })
+  }, [user, userData])
   
 
   // useEffect(() => {

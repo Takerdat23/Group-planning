@@ -14,8 +14,7 @@ const LoginScreen = ({ navigation }) => {
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const { user, setUser, userName, setUserName,
-            sharedIDs, setSharedIDs } = useUser();
+    const { user, setUser, userData, setUserData} = useUser();
   
     const auth = useContext(AuthContext);
   
@@ -53,14 +52,17 @@ const LoginScreen = ({ navigation }) => {
     
       const loginPromise = login(email, password)
       loginPromise.then(
-        (userData) => {
+        (data) => {
           saveCredentials(email, password);
           auth.login();
           setUser(email)
-          setUserName(userData.name)
-          setSharedIDs(userData.sharedIDs)
+          setUserData({
+            name: data.name,
+            email: data.email,
+            sharedIDs: data.sharedIDs
+          })
           setLoading(false);
-          
+
           navigation.navigate('Shared');
         }, (error) => {
           setLoading(false);
