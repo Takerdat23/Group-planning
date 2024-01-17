@@ -6,7 +6,8 @@ import {MemberIndicator, saveMembersToStorage, getMemberByNameFromStorage, getRa
 import {useMembers} from '../../server/context'; 
 import styles from './styles'
 import {useProjectsCount} from "../../server/context.js"; 
-
+import { addProject } from '../../server/AuthService.js';
+import AuthContext from '../../server/AuthService.js';
 
 
 
@@ -33,31 +34,32 @@ const SharedProjectsScreen = ({ navigation }) => {
   const {Memberlist, setMemberlist} = useMembers();
   const {projectData,  updateCount} = useProjectsCount(); 
 
- 
+  auth = useContext(AuthContext)
 
-
+  useEffect(() => {
+  })
   
 
-  useEffect(() => {
-    loadMembers();
-  }, []);
+  // useEffect(() => {
+  //   loadMembers();
+  // }, []);
 
-  useEffect(() => {
-    loadProjects();
-  }, []);
+  // useEffect(() => {
+  //   loadProjects();
+  // }, []);
 
-  useEffect(() => {
-    storeProjects(projects);
-    projectData.Shared_Projects = projects.length ; 
-    updateCount(projectData);
+  // useEffect(() => {
+  //   storeProjects(projects);
+  //   projectData.Shared_Projects = projects.length ; 
+  //   updateCount(projectData);
 
-  }, [projects]);
+  // }, [projects]);
 
 
-  useEffect(() => {
-    storeMembers(members);
+  // useEffect(() => {
+  //   storeMembers(members);
 
-  }, [members]);
+  // }, [members]);
 
   const openAddMemberModal = (projectTitle) => {
     setSelectedProjectTitle(projectTitle);
@@ -74,55 +76,55 @@ const SharedProjectsScreen = ({ navigation }) => {
   };
 
 
-  const storeMembers = async (members) => {
-    try {
-      setMemberlist(members); 
-      const memberString = JSON.stringify(members);
-      await AsyncStorage.setItem('ShareMembers', memberString);   
-    } catch (e) {
-      console.error("Error saving members", e);
-    }
-  };
+  // const storeMembers = async (members) => {
+  //   try {
+  //     setMemberlist(members); 
+  //     const memberString = JSON.stringify(members);
+  //     await AsyncStorage.setItem('ShareMembers', memberString);   
+  //   } catch (e) {
+  //     console.error("Error saving members", e);
+  //   }
+  // };
   
 
 
 
-  const storeProjects = async (projects) => {
-    try {
-      const tasksString = JSON.stringify(projects);
+  // const storeProjects = async (projects) => {
+  //   try {
+  //     const tasksString = JSON.stringify(projects);
     
-      await AsyncStorage.setItem('ShareProjects', tasksString);
+  //     await AsyncStorage.setItem('ShareProjects', tasksString);
 
 
-    } catch (e) {
-      console.error("Error saving tasks", e);
-    }
-  };
+  //   } catch (e) {
+  //     console.error("Error saving tasks", e);
+  //   }
+  // };
   
 
-  const loadProjects = async () => {
-    try {
-      const projectsString = await AsyncStorage.getItem('ShareProjects');
+  // const loadProjects = async () => {
+  //   try {
+  //     const projectsString = await AsyncStorage.getItem('ShareProjects');
       
-      if (projectsString !== null) {
-        setProjects(JSON.parse(projectsString));
+  //     if (projectsString !== null) {
+  //       setProjects(JSON.parse(projectsString));
         
        
-      }
-    } catch (e) {
-      console.error("Error loading tasks", e);
-    }
-  };
+  //     }
+  //   } catch (e) {
+  //     console.error("Error loading tasks", e);
+  //   }
+  // };
 
-  const loadMembers= async ()=> { 
-    try {
-      const memberString = await AsyncStorage.getItem('ShareMembers');
-      setMembers(JSON.parse(memberString));
+  // const loadMembers= async ()=> { 
+  //   try {
+  //     const memberString = await AsyncStorage.getItem('ShareMembers');
+  //     setMembers(JSON.parse(memberString));
       
-    } catch (e) {
-    console.error("Error loading tasks", e);
-  }
-  };
+  //   } catch (e) {
+  //   console.error("Error loading tasks", e);
+  // }
+  // };
 
   
 
@@ -154,7 +156,16 @@ const SharedProjectsScreen = ({ navigation }) => {
 
 
   const handleNewProjects = (newProject) => {
-    setProjects([...projects, newProject]);
+    const projectPromise = addProject(newProject)
+    projectPromise.then(
+      (projectData) => {
+        console.log("add new project")
+        setProjects([...projects, projectData]);
+      }, 
+      (message) => {
+        console.log(message)
+      }
+    ) 
   };
 
 

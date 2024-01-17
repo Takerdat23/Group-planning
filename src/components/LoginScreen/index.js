@@ -5,7 +5,7 @@ import styles from './styles.js'
 import { login } from '../../server/AuthService.js';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AuthContext from '../../server/AuthService.js'; 
-import {UserProvider, useUser} from '../../server/context.js'; 
+import { useUser } from '../../server/context.js'; 
 
 
 
@@ -14,7 +14,8 @@ const LoginScreen = ({ navigation }) => {
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const { user, setUser } = useUser();
+    const { user, setUser, userName, setUserName,
+            sharedIDs, setSharedIDs } = useUser();
   
     const auth = useContext(AuthContext);
   
@@ -52,13 +53,14 @@ const LoginScreen = ({ navigation }) => {
     
       const loginPromise = login(email, password)
       loginPromise.then(
-        () => {
+        (userData) => {
           saveCredentials(email, password);
           auth.login();
+          setUser(email)
+          setUserName(userData.name)
+          setSharedIDs(userData.sharedIDs)
           setLoading(false);
-       
-          setUser(email); 
-        
+          
           navigation.navigate('Shared');
         }, (error) => {
           setLoading(false);

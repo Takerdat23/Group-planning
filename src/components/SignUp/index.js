@@ -24,7 +24,6 @@ const SignUpScreen = ({ navigation }) => {
         navigation.navigate('Login');
       }, 
       (error) => {
-        // console.log("sigup false")
         setLoading(false);
         setError(error); 
       })

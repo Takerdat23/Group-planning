@@ -3,9 +3,8 @@ import React from 'react';
  
 
 const AuthContext = React.createContext({
-  loggedIn: false,
-  login: () => {loggedIn = true; },
-  logout: () => {loggedIn = false; },
+  login: () => {loggedIn = true;},
+  logout: () => {loggedIn = false;}
 });
 
 export default AuthContext;
@@ -14,22 +13,20 @@ export default AuthContext;
 const endpoint = "https://group-planning-websocket.webpubsub.azure.com"
 const path = "/clients/socketio/hubs/group_planning"
 
-let isConnect = false
 let socket = null
-if(!isConnect) {
-  socket = io(endpoint, {
-    path: path,
-  });
+if(!socket || !socket.connected) {
+  // socket = io(endpoint, {
+  //   path: path,
+  // });
+  socket = io("http://192.168.87.102:4000")
 }
 
 socket.on('handshake', (word) => {
   console.log(word);
-  isConnect = true;
 });
 
 socket.on("disconnect", () => {
   console.log("disconnect from server")
-  isConnect = false
 })
 
 export function signup(username, email, password) {
@@ -40,7 +37,7 @@ export function signup(username, email, password) {
   };
 
   socket.emit('sign-up', userData)
-  return new Promise((resolve, reject) => {
+  const signupPromise =  new Promise((resolve, reject) => {
     socket.on("user log", (message) => {
       if(message == "Signup successful")
         resolve()
@@ -49,6 +46,12 @@ export function signup(username, email, password) {
       socket.off("user log")
     })
   })
+
+  const timeOut = new Promise((resolve, reject) => {
+    setTimeout(reject, 3000, "Server doesn't response, please try again")
+  })
+
+  return Promise.race([signupPromise, timeOut])
 };
 
 
@@ -61,18 +64,21 @@ export function login(email, password) {
 
   socket.emit('login', userData);
 
-  return new Promise((resolve, reject) => {
-    socket.on("user log", (message) => {
-    
+  const loginPromise =  new Promise((resolve, reject) => {
+    socket.on("user log", (message, user) => {
       if(message == "Login successful")
-        resolve()
+        resolve(user)
       else
         reject(message)
       socket.off("user log")
     });
-
-    
   })
+
+  const timeOut = new Promise((resolve, reject) => {
+    setTimeout(reject, 3000, "Server doesn't response, please try again")
+  })
+
+  return Promise.race([loginPromise, timeOut])
 };
 
 
@@ -105,16 +111,21 @@ export const getUser = () => {
 }; 
 
 //Project
-export const newProject = (projectName) => {
-  if (!socket) {
-    console.warn("Socket not connected");
-    return;
-  }
-  console.log(projectName);
-  socket.emit('newProject', projectName);
-  socket.on('serverLog', (text) => {
-    console.log(text);
-  });
+export function addProject(projectData) {
+  if(!socket.connected)
+    return new Promise.reject("Please check internet connection")
+
+  console.log(projectData);
+  socket.emit("update project", projectData);
+  return new Promise((resolve, reject) => {
+    socket.on("project log", (message, data) => {
+      if(message == "Update successful")
+        resolve(data)
+      else
+        reject(message)
+      socket.off("project log")
+    })
+  })
 }
 
 export const getProjects = () => {

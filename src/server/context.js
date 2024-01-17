@@ -6,11 +6,17 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 const UserContext = createContext({});
 
 export const UserProvider = ({ children }) => {
-  const [user, setUser] = useState(''); 
+  const [user, setUser] = useState('')
+  const [userName, setUserName] = useState('')
+  const [sharedIDs, setSharedIDs] = useState([])
+
 
 
   return (
-    <UserContext.Provider value={{ user, setUser }}>
+    <UserContext.Provider value={{ 
+      user, setUser,
+      userName, setUserName,
+      sharedIDs, setSharedIDs }}>
       {children}
     </UserContext.Provider>
   );
