@@ -3,12 +3,12 @@ import { useFocusEffect } from '@react-navigation/native';
 import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { Ionicons, MaterialCommunityIcons, FontAwesome } from '@expo/vector-icons';
 import styles from './styles.js'
-import { getUser } from '../../server/AuthService.js';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getUser, uploadAva, downloadAva } from '../../server/AuthService.js';
 import * as ImagePicker from 'expo-image-picker';
 import {useProjectsCount} from "../../server/context.js"; 
-import {UserProvider, useUser} from '../../server/context.js'; 
+import {useUser} from '../../server/context.js'; 
 import AuthContext from '../../server/AuthService.js'; 
+
 
 const ProfileScreen = ({ navigation }) => {
   const [avatar, setAvatar] = useState(null);
@@ -16,42 +16,10 @@ const ProfileScreen = ({ navigation }) => {
   const [shares, setshares] = useState(0); 
   const {projectData, updateCount, setProjectData} = useProjectsCount(); 
   const { user, setUser } = useUser();
-  const [userData , setuserData] = useState(''); 
+  const [userData , setuserData] = useState('Guest'); 
   const auth = useContext(AuthContext);
 
   const [LogOutButtonVisible , setLogOutButton] = useState(false); 
-
-
-  const setLocalAvatar = async (uri) => {
-    try{
-      await AsyncStorage.setItem('avatar', uri)
-      console.log('avatar set to local')
-      }catch(e){
-        console.log(e)
-      }
-    }
-  
-  const getLocalAvatar = async () => {
-    try{
-      const value = await AsyncStorage.getItem('avatar')
-      if(value !== null){
-        console.log('avatar retrieved from local')
-        return value
-      }
-    }catch(e){
-      console.log(e)
-    }
-  }
-
-  
-  useEffect(() => {
-    (
-      async () => {
-          const avatar = await getLocalAvatar()
-          if(avatar){
-            setLocalAvatar(avatar)
-          }}
-    )()}, [])
 
 
   useEffect(() => {
@@ -87,11 +55,21 @@ const ProfileScreen = ({ navigation }) => {
       })
     }, [userData])); 
 
+    
+  useEffect(() => {
+    if(LogOutButtonVisible){
+      if(!avatar){
+        (async () => {
+          const cloudAvatar = await downloadAva(userData);
+          if (cloudAvatar) {
+            setAvatar(cloudAvatar);
+          }
+      })();
+      }    
+    }
+  }, [userData])
+
    
-
-
-  
-  
   const handleChangeAvatar = async() => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
   
@@ -107,9 +85,10 @@ const ProfileScreen = ({ navigation }) => {
     });
   
     if(!result.canceled){
-      const imgURL = result.assets[0].uri
-      setAvatar(imgURL)
-      setLocalAvatar(imgURL)
+      await uploadAva(result.assets[0].uri, userData)
+      .then(() => {
+        setAvatar(result.assets[0].uri);
+      })
     }
   }
 
@@ -125,6 +104,7 @@ const ProfileScreen = ({ navigation }) => {
 
   const handleLogOut= () => { 
     setAvatar(null);
+    setuserData('Guest');
     auth.logout(); 
     navigation.goBack(); 
   }; 
@@ -146,17 +126,17 @@ const ProfileScreen = ({ navigation }) => {
             avatar ? (
               <Image source={{ uri: avatar }} style={styles.profileImage} />
             ) : (
-              <Ionicons name="person" size={55} style={{borderRadius: 100, backgroundColor: '#C2C2C2', padding: 30}}/>
+              <Ionicons name="person" size={55} style={{borderRadius: 100, backgroundColor: '#C2C2C2', padding: 20}}/>
             )
           }
         </TouchableOpacity>
         )
      :
           (
-            <Ionicons name="person" size={55} style={{borderRadius: 100, backgroundColor: '#C2C2C2', padding: 30}}/>
+            <Ionicons name="person" size={55} style={{borderRadius: 100, backgroundColor: '#C2C2C2', padding: 20}}/>
           )
         }
-        <Text style={styles.profileName}>{user.userName}</Text>
+        <Text style={styles.profileName}>{userData}</Text>
         <Text style={styles.profileEmail}>{ emailName() }</Text>
       </View>
       
