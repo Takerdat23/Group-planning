@@ -6,7 +6,7 @@ import {MemberIndicator, saveMembersToStorage, getMemberByNameFromStorage, getRa
 import {useMembers} from '../../server/context'; 
 import styles from './styles'
 import {useProjectsCount} from "../../server/context.js"; 
-import { addProject } from '../../server/AuthService.js';
+import { addProject, addNewMember } from '../../server/AuthService.js';
 import { useUser } from '../../server/context';
 
 
@@ -46,15 +46,17 @@ const SharedProjectsScreen = ({ navigation }) => {
 
   const handleAddMember = () => {
     if (selectedProject && newMemberName) {
-      console.log(selectedProject)
-      addMemberToProject(selectedProject, newMemberName);
+      addMember(selectedProject, newMemberName);
       setNewMemberName('');
       setModalVisible(false);
     }
   };
 
-  const addMemberToProject = (projectTitle, newMemberName) => {
-    
+  const addMember = async (project, newMemberName) => {
+    const addMemberPromise = addNewMember(project.id, userData.email, newMemberName)
+    addMemberPromise.catch((message) => {
+      console.log(message)
+    })
   };
 
 

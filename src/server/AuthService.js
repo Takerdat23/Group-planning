@@ -1,6 +1,5 @@
-import io from 'socket.io-client';
 import React from 'react';
- 
+import socket from './socket'; 
 
 const AuthContext = React.createContext({
   login: () => {loggedIn = true;},
@@ -9,23 +8,16 @@ const AuthContext = React.createContext({
 
 export default AuthContext;
 
-// Declare socket variable at the module level to maintain its scope
-const endpoint = "https://group-planning-websocket.webpubsub.azure.com"
-const path = "/clients/socketio/hubs/group_planning"
-
-let socket = null
-if(!socket || !socket.connected) {
-  // socket = io(endpoint, {
-  //   path: path,
-  // });
-  socket = io("http://192.168.15.102:4000")
-}
-
 socket.on('handshake', (word) => {
   console.log(word);
 });
 
-socket.on("disconnect", () => {
+socket.on("project log", (data) => {
+  console.log(data)
+})
+
+socket.on("disconnect", (reason) => {
+  console.log(reason)
   console.log("disconnect from server")
 })
 
@@ -116,6 +108,28 @@ export function addProject(projectData) {
     return new Promise.reject("Please check internet connection")
 
   socket.emit("add project", projectData);
+  const projectPromise = new Promise((resolve, reject) => {
+    socket.on("project log", (message, data) => {
+      if(message == "Add project successful")
+        resolve(data)
+      else
+        reject(message)
+      socket.off("project log")
+    })
+  })
+
+  const timeOut = new Promise((resolve, reject) => {
+    setTimeout(reject, 3000, "Server doesn't response, please try again")
+  })
+
+  return Promise.race([projectPromise, timeOut])
+}
+
+export function addNewMember(projectID, master, member) {
+  if(!socket.connected)
+    return new Promise.reject("Please check internet connection")
+
+  socket.emit("add member", projectID, master, member);
   const projectPromise = new Promise((resolve, reject) => {
     socket.on("project log", (message, data) => {
       if(message == "Add project successful")
