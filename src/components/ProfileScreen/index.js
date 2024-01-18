@@ -1,6 +1,6 @@
 import React, { useEffect, useState,  useCallback ,useContext} from 'react';
 import { useFocusEffect } from '@react-navigation/native';
-import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { View, Text, Image, Button, TouchableOpacity, ScrollView, Alert, Modal } from 'react-native';
 import { Ionicons, MaterialCommunityIcons, FontAwesome } from '@expo/vector-icons';
 import styles from './styles.js'
 import { getUser, uploadAva, downloadAva } from '../../server/AuthService.js';
@@ -17,6 +17,7 @@ const ProfileScreen = ({ navigation }) => {
   const {projectData, updateCount, setProjectData} = useProjectsCount(); 
   const { user, setUser } = useUser();
   const [userData , setuserData] = useState('Guest'); 
+  const [modalVisible, setModalVisible] = useState(false);
   const auth = useContext(AuthContext);
 
   const [LogOutButtonVisible , setLogOutButton] = useState(false); 
@@ -78,7 +79,7 @@ const ProfileScreen = ({ navigation }) => {
     }
   
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [4,4],
       quality: 1,
@@ -103,6 +104,7 @@ const ProfileScreen = ({ navigation }) => {
 
 
   const handleLogOut= () => { 
+    //setModalVisible(true);
     setAvatar(null);
     setuserData('Guest');
     auth.logout(); 
@@ -110,6 +112,38 @@ const ProfileScreen = ({ navigation }) => {
   }; 
   return (
     <ScrollView style={styles.container}>
+     {/* <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <TouchableOpacity
+            style={styles.centeredView}
+            activeOpacity={1}
+            onPressOut={() =>  setModalVisible(!modalVisible)}
+          >
+     
+          <View style={styles.modalView}>
+            <Button
+              title="Add Member"
+              onPress={
+                () => { 
+                  setModalVisible(!modalVisible);
+                  setAvatar(null);
+                  setuserData('Guest');
+                  auth.logout(); 
+                  navigation.goBack(); 
+                }
+              }
+            />
+          </View>
+   
+        </TouchableOpacity>
+      </Modal> */}
+
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Profile</Text>
       </View>
@@ -159,11 +193,7 @@ const ProfileScreen = ({ navigation }) => {
       <TouchableOpacity  style={styles.manageAccount} onPress={() => handleLogOut()}>
         <Text style={styles.manageAccountText}>Log out</Text>
       </TouchableOpacity>)}
-      
-      
-    
-      
-  
+
     </ScrollView>
   );
 };
