@@ -8,6 +8,7 @@ import {useUser, useMembers } from '../../server/context.js'
 import styles from './styles.js'
 import { addTask, getTask, updateTask, deleteTask } from '../../server/AuthService.js';
 import { useIsFocused } from '@react-navigation/native';
+import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry.js';
 
   const SharedTaskScreen = ({route, navigation}) => {
     const [tasks, setTasks] = useState([]);
@@ -74,22 +75,12 @@ import { useIsFocused } from '@react-navigation/native';
       setSettingModalVisible(true); 
     };
 
-
+  
     useEffect(() => {
       getTask().then((data) => {
         setTasks(data);
       });
     }, []);
-
-    
-  
-  
-    useEffect(() => {
-      setTasks([]);
-      isFocused && getTask().then((data) => {
-        setTasks(data);
-      });
-    }, [isFocused]);
   
     // useEffect(() => {
     //   storeTasks(tasks);
@@ -201,10 +192,12 @@ import { useIsFocused } from '@react-navigation/native';
         asigned_to : '', 
       };
       addTask(newTask);
-      setTasks([...tasks, newTask]);
+      //setTasks([...tasks, newTask]);
       //storeTasks([...tasks, newTask]); 
       setNewTaskText('');
-     
+      getTask().then((data) => {
+        setTasks(data);
+      });
       
       }
       else{
@@ -226,8 +219,11 @@ import { useIsFocused } from '@react-navigation/native';
     const handleRemoveTask =  (id) => {
       deleteTask(id);
       console.log("removed"); 
-      const newtasks = tasks.filter((item) => item.key !== id);
-      setTasks(newtasks);
+      // const newtasks = tasks.filter((item) => item.key !== id);
+      // setTasks(newtasks);
+      getTask().then((data) => {
+        setTasks(data);
+      });
       setProjectChanges();
     }; 
 
