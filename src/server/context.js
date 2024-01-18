@@ -6,11 +6,14 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 const UserContext = createContext({});
 
 export const UserProvider = ({ children }) => {
-  const [user, setUser] = useState(''); 
-
+  const [user, setUser] = useState('')
+  const [userData, setUserData] = useState({
+    name: "name",
+    email: "email",
+  })
 
   return (
-    <UserContext.Provider value={{ user, setUser }}>
+    <UserContext.Provider value={{ user, setUser, userData, setUserData}}>
       {children}
     </UserContext.Provider>
   );
@@ -92,6 +95,27 @@ export const ProjectContextProvider = ({ children }) => {
 
 export const useProjectsCount = () => {
   const context = useContext(ProjectCountsContext);
+  if (context === undefined) {
+    throw new Error('useList must be used within a setMemberlist');
+  }
+  return context;
+};
+
+const SharedContext = createContext([]); 
+
+export const SharedContextProvider = ({ children }) => {
+  const [sharedProjects, setSharedProjects] = useState([])
+  return (
+    <SharedContext.Provider value={{ sharedProjects, setSharedProjects }}>
+      {children}
+    </SharedContext.Provider>
+  );
+};
+
+
+
+export const useShared = () => {
+  const context = useContext(SharedContext);
   if (context === undefined) {
     throw new Error('useList must be used within a setMemberlist');
   }

@@ -23,8 +23,10 @@ import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry.js';
     const [project , setProject] = useState(Current_project); 
     const {user , setUser} = useUser(); 
     const {Memberlist, setMemberlist} = useMembers();
-    const isFocused = useIsFocused();
 
+    useEffect(() => {
+      // console.log(tasks)
+    }, [tasks])
     const changeSettings = () => { 
      
       if (Current_project.master == user){ 

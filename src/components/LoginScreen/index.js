@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useContext } from 'react';
-
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import styles from './styles.js'
 import { login } from '../../server/AuthService.js';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AuthContext from '../../server/AuthService.js'; 
-import {UserProvider, useUser} from '../../server/context.js'; 
+import { useShared, useUser } from '../../server/context.js'; 
+import { usedShared } from "../../server/context.js"
 
 
 
@@ -14,7 +14,8 @@ const LoginScreen = ({ navigation }) => {
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const { user, setUser } = useUser();
+    const { user, setUser, userData, setUserData } = useUser();
+    const { sharedProjects, setSharedProjects } = useShared()
   
     const auth = useContext(AuthContext);
   
@@ -52,14 +53,17 @@ const LoginScreen = ({ navigation }) => {
     
       const loginPromise = login(email, password)
       loginPromise.then(
-        () => {
-          
+        (data) => {
           saveCredentials(email, password);
           auth.login();
+          setUser(email)
+          setUserData({
+            name: data.name,
+            email: data.email,
+          })
+          setSharedProjects(data.projects)
           setLoading(false);
-       
-          setUser(email); 
-          console.log(auth);
+
           navigation.navigate('Shared');
         }, (error) => {
           setLoading(false);
@@ -70,7 +74,6 @@ const LoginScreen = ({ navigation }) => {
     const handleCancel = () => {
       navigation.navigate('PersonalProject'); 
       console.log('Cancel pressed');
-      console.log(auth);
     };
   
     const handleSignUp = () => {
