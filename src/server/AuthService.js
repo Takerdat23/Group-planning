@@ -64,7 +64,7 @@ export function login(email, password) {
   return new Promise((resolve, reject) => {
     socket.on("user log", (message) => {
     
-      if(message == "Login successful")
+      if(message == "login successful")
         resolve()
       else
         reject(message)
@@ -126,7 +126,7 @@ export const getProjects = () => {
     }
     socket.emit('getProject');
     socket.on('Projects', (projects) => {
-      console.log(projects);
+      //console.log(projects);
       resolve(projects); // Resolve the promise with the received projects
     });
 
@@ -149,6 +149,65 @@ export const deleteProject = (id) => {
     console.log(text);
   });
 }
+
+//Task
+export const addTask = (taskName) => {
+  if (!socket) {
+    console.warn("Socket not connected");
+    return;
+  }
+  console.log(taskName);
+  socket.emit('newTask', taskName);
+  socket.on('serverLog', (text) => {
+    console.log(text);
+  });
+}
+
+export const getTask = () => {
+  return new Promise((resolve, reject) => {
+    if (!socket) {
+      console.warn("Socket not connected");
+      reject("Socket not connected");
+      return;
+    }
+    socket.emit('getTask');
+    socket.on('Tasks', (tasks) => {
+      console.log(tasks);
+      resolve(tasks); // Resolve the promise with the received tasks
+    });
+
+    // Listen for errors
+    socket.on('error', (error) => {
+      console.error("Socket error:", error);
+      reject(error); // Reject the promise if there's an error
+    });
+  });
+};
+
+export const deleteTask = (id) => {
+  if (!socket) {
+    console.warn("Socket not connected");
+    return;
+  }
+  console.log(id);
+  socket.emit('deleteTask', id);
+  socket.on('serverLog', (text) => {
+    console.log(text);
+  });
+}
+
+export const updateTask = (taskID, task) => {
+  if (!socket) {
+    console.warn("Socket not connected");
+    return;
+  }
+  console.log(task);
+  socket.emit('updateTask',taskID, task);
+  socket.on('updateTask log', (text) => {
+    console.log(text);
+  });
+}
+
 
 export const getSocket = () => {
   return socket; // Return the socket instance

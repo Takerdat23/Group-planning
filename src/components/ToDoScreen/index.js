@@ -6,7 +6,6 @@ import { Ionicons } from '@expo/vector-icons';
 import {getStatusStyle, getRelativeTime} from './utils.js'
 import styles from './styles.js'
 
-
   const TaskScreen = ({route, navigation}) => {
     const [tasks, setTasks] = useState([]);
     const [modalVisible, setModalVisible] = useState(false);
@@ -19,7 +18,6 @@ import styles from './styles.js'
     const {Project_id} = route.params; 
     const {Current_project} = route.params ; 
     const {onDeleteCall} = route.params; 
-  
   
     useEffect(() => {
      
@@ -44,10 +42,7 @@ import styles from './styles.js'
     };
   
   
-  
-  
-  
-  
+
   
     useEffect(() => {
       loadTasks();
@@ -56,10 +51,6 @@ import styles from './styles.js'
     useEffect(() => {
       storeTasks(tasks);
     }, [tasks]);
-  
-    const generateKeyWithTimestamp = () => {
-      return new Date().getTime().toString();
-    };
   
     const sortTasksByStatus = (tasks) => {
       const statusOrder = { 'To do': 1, 'Pending': 2, 'Done': 3 };
@@ -141,9 +132,8 @@ import styles from './styles.js'
   
     const addNewTask = () => {
       if(newTaskText.length){
-        const newKey = generateKeyWithTimestamp(); 
         const newTask = {
-        key: newKey,
+        key: '',
         text: newTaskText,
         status: 'To do' 
       };
