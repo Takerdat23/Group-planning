@@ -122,7 +122,7 @@ const PersonalProject = ({ navigation }) => {
           
           onPress={() => handleProject(project)}
         >
-          <View style={[styles.projectIcon, { backgroundColor: getRandomColor() }]} />
+          <View style={[styles.projectIcon, { backgroundColor: project.color }]} />
           <View style={styles.projectDetails}>
             <Text style={styles.projectTitle}>{project.title}</Text>
             <Text style={styles.projectTimestamp}>{getRelativeTime(new Date(project.createdAt))}</Text>
