@@ -7,6 +7,7 @@ import {useMembers} from '../../server/context';
 import styles from './styles'
 import {useProjectsCount} from "../../server/context.js"; 
 import { getProjects, deleteProject } from '../../server/AuthService.js';
+import {useUser} from '../../server/context.js'
 
 
 
@@ -32,6 +33,8 @@ const SharedProjectsScreen = ({ navigation }) => {
   const [selectedProjectTitle, setSelectedProjectTitle] = useState(null);
   const {Memberlist, setMemberlist} = useMembers();
   const {projectData,  updateCount} = useProjectsCount(); 
+  const {user , setUser} = useUser(); 
+
 
  
 
@@ -46,12 +49,15 @@ const SharedProjectsScreen = ({ navigation }) => {
   //   loadProjects();
   // }, []);
 
-  // useEffect(() => {
-  //   storeProjects(projects);
-  //   projectData.Shared_Projects = projects.length ; 
-  //   updateCount(projectData);
+  useEffect(() => {
 
-  // }, [projects]);
+    projectData.Shared_Projects = projects.length ; 
+    updateCount(projectData);
+
+  }, [projects]);
+
+
+
 
 
   // useEffect(() => {
@@ -123,6 +129,15 @@ const SharedProjectsScreen = ({ navigation }) => {
   //   console.error("Error loading tasks", e);
   // }
   // };
+
+  const checkMaster = (project) => { 
+      if(user == project.master){ 
+        return true; 
+      }
+      else{ 
+        return false;
+      }
+  }
 
   
 
@@ -264,12 +279,12 @@ const SharedProjectsScreen = ({ navigation }) => {
           </View>
            {/* Add this line where you want the member indicators to appear */}
           <MemberIndicator members={GetMemberPerProject(project)} />
-          <TouchableOpacity
+          {checkMaster(project) && <TouchableOpacity
               style={styles.addMemberButton}
               onPress={() => openAddMemberModal(project.title)}
             >
               <Ionicons name="person-add-outline" size={28} ></Ionicons>
-            </TouchableOpacity>
+            </TouchableOpacity>}
 
           
 
