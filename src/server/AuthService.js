@@ -191,7 +191,7 @@ export const deleteTask = (id) => {
   }
   console.log(id);
   socket.emit('deleteTask', id);
-  socket.on('serverLog', (text) => {
+  socket.on('deleteTask log', (text) => {
     console.log(text);
   });
 }

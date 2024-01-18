@@ -6,7 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import {getStatusStyle, getRelativeTime} from './utils.js'
 import {useUser, useMembers } from '../../server/context.js'
 import styles from './styles.js'
-import { addTask, getTask, updateTask } from '../../server/AuthService.js';
+import { addTask, getTask, updateTask, deleteTask } from '../../server/AuthService.js';
 import { useIsFocused } from '@react-navigation/native';
 
   const SharedTaskScreen = ({route, navigation}) => {
@@ -224,6 +224,7 @@ import { useIsFocused } from '@react-navigation/native';
     };
 
     const handleRemoveTask =  (id) => {
+      deleteTask(id);
       console.log("removed"); 
       const newtasks = tasks.filter((item) => item.key !== id);
       setTasks(newtasks);
