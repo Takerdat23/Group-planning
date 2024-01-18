@@ -14,7 +14,8 @@ const LoginScreen = ({ navigation }) => {
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const { user, setUser, userData, setUserData} = useUser();
+    const { user, setUser, userData, setUserData,
+            sharedProjects, setSharedProjects} = useUser();
   
     const auth = useContext(AuthContext);
   
@@ -59,8 +60,8 @@ const LoginScreen = ({ navigation }) => {
           setUserData({
             name: data.name,
             email: data.email,
-            sharedIDs: data.sharedIDs
           })
+          setSharedProjects(data.projects)
           setLoading(false);
 
           navigation.navigate('Shared');

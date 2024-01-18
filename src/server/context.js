@@ -10,13 +10,12 @@ export const UserProvider = ({ children }) => {
   const [userData, setUserData] = useState({
     name: "name",
     email: "email",
-    sharedIDs: "sharedIDs",
   })
-
+  const [sharedProjects, setSharedProjects] = useState([])
 
 
   return (
-    <UserContext.Provider value={{ user, setUser, userData, setUserData}}>
+    <UserContext.Provider value={{ user, setUser, sharedProjects, setSharedProjects ,userData, setUserData}}>
       {children}
     </UserContext.Provider>
   );

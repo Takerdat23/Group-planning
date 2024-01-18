@@ -22,7 +22,9 @@ import styles from './styles.js'
     const {user , setUser} = useUser(); 
     const {Memberlist, setMemberlist} = useMembers();
 
-
+    useEffect(() => {
+      // console.log(tasks)
+    }, [tasks])
     const changeSettings = () => { 
      
       if (Current_project.master == user){ 

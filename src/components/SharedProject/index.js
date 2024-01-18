@@ -26,131 +26,35 @@ const getRelativeTime = (date) => {
 };
 
 const SharedProjectsScreen = ({ navigation }) => {
-  const [projects, setProjects] = useState([]);
+  const { user, setUser, userData, setUserData,
+          sharedProjects, setSharedProjects} = useUser()
   const [modalVisible, setModalVisible] = useState(false);
   const [newMemberName, setNewMemberName] = useState('');
   const [members, setMembers] = useState([]);
-  const [selectedProjectTitle, setSelectedProjectTitle] = useState(null);
+  const [selectedProject, setSelectedProject] = useState(null);
   const {Memberlist, setMemberlist} = useMembers();
   const {projectData,  updateCount} = useProjectsCount(); 
-  const { user, setUser, userData, setUserData} = useUser()
-
-  useEffect(() => {
-  }, [user, userData])
-  
 
   // useEffect(() => {
-  //   loadMembers();
-  // }, []);
+  //   console.log(sharedProjects)
+  // }, [sharedProjects])
 
-  // useEffect(() => {
-  //   loadProjects();
-  // }, []);
-
-  // useEffect(() => {
-  //   storeProjects(projects);
-  //   projectData.Shared_Projects = projects.length ; 
-  //   updateCount(projectData);
-
-  // }, [projects]);
-
-
-  // useEffect(() => {
-  //   storeMembers(members);
-
-  // }, [members]);
-
-  const openAddMemberModal = (projectTitle) => {
-    setSelectedProjectTitle(projectTitle);
-    setModalVisible(true);
+  const openAddMemberModal = (project) => {
+    setSelectedProject(project)
+    setModalVisible(true)
   };
 
   const handleAddMember = () => {
-    if (selectedProjectTitle && newMemberName) {
-      addMemberToProject(selectedProjectTitle, newMemberName);
+    if (selectedProject && newMemberName) {
+      console.log(selectedProject)
+      addMemberToProject(selectedProject, newMemberName);
       setNewMemberName('');
       setModalVisible(false);
-    
     }
   };
 
-
-  // const storeMembers = async (members) => {
-  //   try {
-  //     setMemberlist(members); 
-  //     const memberString = JSON.stringify(members);
-  //     await AsyncStorage.setItem('ShareMembers', memberString);   
-  //   } catch (e) {
-  //     console.error("Error saving members", e);
-  //   }
-  // };
-  
-
-
-
-  // const storeProjects = async (projects) => {
-  //   try {
-  //     const tasksString = JSON.stringify(projects);
-    
-  //     await AsyncStorage.setItem('ShareProjects', tasksString);
-
-
-  //   } catch (e) {
-  //     console.error("Error saving tasks", e);
-  //   }
-  // };
-  
-
-  // const loadProjects = async () => {
-  //   try {
-  //     const projectsString = await AsyncStorage.getItem('ShareProjects');
-      
-  //     if (projectsString !== null) {
-  //       setProjects(JSON.parse(projectsString));
-        
-       
-  //     }
-  //   } catch (e) {
-  //     console.error("Error loading tasks", e);
-  //   }
-  // };
-
-  // const loadMembers= async ()=> { 
-  //   try {
-  //     const memberString = await AsyncStorage.getItem('ShareMembers');
-  //     setMembers(JSON.parse(memberString));
-      
-  //   } catch (e) {
-  //   console.error("Error loading tasks", e);
-  // }
-  // };
-
-  
-
   const addMemberToProject = (projectTitle, newMemberName) => {
-    setProjects(projects.map(project => {
-      
-      if (project.title === projectTitle) {
-      
-        if (!project.members.includes(newMemberName)) {
-          if(!members.some(member => member.name === newMemberName)){
-            const newMember = { 
-              name: newMemberName, 
-              memberColor: getRandomColor()
-            };
-        
-            setMembers([...members, newMember]);    
-            project.members.push(newMemberName); 
-          }
-          else { 
-            project.members.push(newMemberName);  
-          }
-        }
     
-      }
-    
-      return project;
-    }));
   };
 
 
@@ -159,16 +63,13 @@ const SharedProjectsScreen = ({ navigation }) => {
     projectPromise.then(
       (projectData) => {
         console.log("add new project")
-        setProjects([...projects, projectData]);
+        setSharedProjects([...sharedProjects, projectData]);
       }, 
       (message) => {
         console.log(message)
       }
     ) 
   };
-
-
-
 
   const handleUpdateProjects = (id, updatedProject) => {
  
@@ -255,8 +156,8 @@ const SharedProjectsScreen = ({ navigation }) => {
    
         </TouchableOpacity>
       </Modal>
-        <Text style={styles.projectCount}>You have {projects.length} projects</Text>
-        {projects.map((project, index) => (
+        <Text style={styles.projectCount}>You have {sharedProjects.length} projects</Text>
+        {sharedProjects.map((project, index) => (
         <TouchableOpacity 
           key={project.id} 
           style={styles.projectCard} 
@@ -276,7 +177,7 @@ const SharedProjectsScreen = ({ navigation }) => {
           <MemberIndicator members={GetMemberPerProject(project)} />
           <TouchableOpacity
               style={styles.addMemberButton}
-              onPress={() => openAddMemberModal(project.title)}
+              onPress={() => openAddMemberModal(project)}
             >
               <Ionicons name="person-add-outline" size={28} ></Ionicons>
             </TouchableOpacity>

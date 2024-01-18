@@ -18,7 +18,7 @@ if(!socket || !socket.connected) {
   // socket = io(endpoint, {
   //   path: path,
   // });
-  socket = io("http://192.168.87.102:4000")
+  socket = io("http://192.168.15.102:4000")
 }
 
 socket.on('handshake', (word) => {
@@ -115,17 +115,22 @@ export function addProject(projectData) {
   if(!socket.connected)
     return new Promise.reject("Please check internet connection")
 
-  console.log(projectData);
-  socket.emit("update project", projectData);
-  return new Promise((resolve, reject) => {
+  socket.emit("add project", projectData);
+  const projectPromise = new Promise((resolve, reject) => {
     socket.on("project log", (message, data) => {
-      if(message == "Update successful")
+      if(message == "Add project successful")
         resolve(data)
       else
         reject(message)
       socket.off("project log")
     })
   })
+
+  const timeOut = new Promise((resolve, reject) => {
+    setTimeout(reject, 3000, "Server doesn't response, please try again")
+  })
+
+  return Promise.race([projectPromise, timeOut])
 }
 
 export const getProjects = () => {
