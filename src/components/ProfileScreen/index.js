@@ -122,7 +122,9 @@ const ProfileScreen = ({ navigation }) => {
     }
   }
 
+
   const handleLogOut= () => { 
+    setAvatar(null);
     auth.logout(); 
     navigation.goBack(); 
   }; 
@@ -137,7 +139,9 @@ const ProfileScreen = ({ navigation }) => {
           source={{ uri: 'E:/Schoolworks/Docker/Final_project/Group-planning/assets/favicon.png' }} // Replace with actual image source
           style={styles.profileImage}
         /> */}
-        <TouchableOpacity onPress={handleChangeAvatar}>
+        { LogOutButtonVisible ? 
+        (
+          <TouchableOpacity onPress={handleChangeAvatar}>
           {
             avatar ? (
               <Image source={{ uri: avatar }} style={styles.profileImage} />
@@ -146,6 +150,12 @@ const ProfileScreen = ({ navigation }) => {
             )
           }
         </TouchableOpacity>
+        )
+     :
+          (
+            <Ionicons name="person" size={55} style={{borderRadius: 100, backgroundColor: '#C2C2C2', padding: 30}}/>
+          )
+        }
         <Text style={styles.profileName}>{user.userName}</Text>
         <Text style={styles.profileEmail}>{ emailName() }</Text>
       </View>

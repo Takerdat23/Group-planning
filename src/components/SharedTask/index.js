@@ -6,7 +6,9 @@ import { Ionicons } from '@expo/vector-icons';
 import {getStatusStyle, getRelativeTime} from './utils.js'
 import {useUser, useMembers } from '../../server/context.js'
 import styles from './styles.js'
-
+import { addTask, getTask, updateTask, deleteTask } from '../../server/AuthService.js';
+import { useIsFocused } from '@react-navigation/native';
+import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry.js';
 
   const SharedTaskScreen = ({route, navigation}) => {
     const [tasks, setTasks] = useState([]);
@@ -21,7 +23,7 @@ import styles from './styles.js'
     const [project , setProject] = useState(Current_project); 
     const {user , setUser} = useUser(); 
     const {Memberlist, setMemberlist} = useMembers();
-
+    const isFocused = useIsFocused();
 
     const changeSettings = () => { 
      
@@ -73,20 +75,16 @@ import styles from './styles.js'
       setSettingModalVisible(true); 
     };
 
-
-    useEffect(() => {
-    }, [project]);
-
-    
-  
   
     useEffect(() => {
-      loadTasks();
+      getTask().then((data) => {
+        setTasks(data);
+      });
     }, []);
   
-    useEffect(() => {
-      storeTasks(tasks);
-    }, [tasks]);
+    // useEffect(() => {
+    //   storeTasks(tasks);
+    // }, [tasks]);
   
     const generateKeyWithTimestamp = () => {
       return new Date().getTime().toString();
@@ -161,28 +159,28 @@ import styles from './styles.js'
     // Edit task section
   
   
-    const storeTasks = async (tasks) => {
-      try {
-        const tasksString = JSON.stringify(tasks);
-        const name = Project_id + 'tasks'; 
-        await AsyncStorage.setItem(name, tasksString);
-      } catch (e) {
-        console.error("Error saving tasks", e);
-      }
-    };
+    // const storeTasks = async (tasks) => {
+    //   try {
+    //     const tasksString = JSON.stringify(tasks);
+    //     const name = Project_id + 'tasks'; 
+    //     await AsyncStorage.setItem(name, tasksString);
+    //   } catch (e) {
+    //     console.error("Error saving tasks", e);
+    //   }
+    // };
     
   
-    const loadTasks = async () => {
-      try {
-        const name = Project_id + 'tasks'; 
-        const tasksString = await AsyncStorage.getItem(name);
-        if (tasksString !== null) {
-          setTasks(JSON.parse(tasksString));
-        }
-      } catch (e) {
-        console.error("Error loading tasks", e);
-      }
-    };
+    // const loadTasks = async () => {
+    //   try {
+    //     const name = Project_id + 'tasks'; 
+    //     const tasksString = await AsyncStorage.getItem(name);
+    //     if (tasksString !== null) {
+    //       setTasks(JSON.parse(tasksString));
+    //     }
+    //   } catch (e) {
+    //     console.error("Error loading tasks", e);
+    //   }
+    // };
   
     const addNewTask = () => {
       if(newTaskText.length){
@@ -193,10 +191,13 @@ import styles from './styles.js'
         status: 'To do' , 
         asigned_to : '', 
       };
-      setTasks([...tasks, newTask]);
-      storeTasks([...tasks, newTask]); 
+      addTask(newTask);
+      //setTasks([...tasks, newTask]);
+      //storeTasks([...tasks, newTask]); 
       setNewTaskText('');
-     
+      getTask().then((data) => {
+        setTasks(data);
+      });
       
       }
       else{
@@ -216,9 +217,13 @@ import styles from './styles.js'
     };
 
     const handleRemoveTask =  (id) => {
+      deleteTask(id);
       console.log("removed"); 
-      const newtasks = tasks.filter((item) => item.key !== id);
-      setTasks(newtasks);
+      // const newtasks = tasks.filter((item) => item.key !== id);
+      // setTasks(newtasks);
+      getTask().then((data) => {
+        setTasks(data);
+      });
       setProjectChanges();
     }; 
 
@@ -235,14 +240,18 @@ import styles from './styles.js'
 
 
     
-  
+  //Update task status section 
     const changeTaskStatus = (key, newStatus) => {
       const updatedTasks = tasks.map(task => {
         if (task.key === key) {
-          return { ...task, status: newStatus };
+          task.status = newStatus;
+          updateTask(key, task);
+          return task;
+          //return { ...task, status: newStatus };
         }
         return task;
       });
+      console.log(updatedTasks);
       setTasks(updatedTasks);
    
       setModalVisible(false);

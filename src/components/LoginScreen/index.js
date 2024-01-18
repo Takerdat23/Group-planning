@@ -53,12 +53,13 @@ const LoginScreen = ({ navigation }) => {
       const loginPromise = login(email, password)
       loginPromise.then(
         () => {
+          
           saveCredentials(email, password);
           auth.login();
           setLoading(false);
        
           setUser(email); 
-        
+          console.log(auth);
           navigation.navigate('Shared');
         }, (error) => {
           setLoading(false);
@@ -69,6 +70,7 @@ const LoginScreen = ({ navigation }) => {
     const handleCancel = () => {
       navigation.navigate('PersonalProject'); 
       console.log('Cancel pressed');
+      console.log(auth);
     };
   
     const handleSignUp = () => {
