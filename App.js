@@ -18,7 +18,7 @@ import SharedTaskScreen from './src/components/SharedTask/index.js'
 import MemberScreen from './src/components/MembersScreen/index.js'
 import AuthContext from './src/server/AuthService.js';
 import {UserProvider} from './src/server/context.js';
-import {MemberContextProvider, ProjectContextProvider} from  './src/server/context.js'; 
+import {MemberContextProvider, ProjectContextProvider, SharedContextProvider} from  './src/server/context.js'; 
 
 
 
@@ -190,6 +190,7 @@ const App = () => {
 
   
   return (
+    <SharedContextProvider>
     <ProjectContextProvider>
     <MemberContextProvider>
     <UserProvider>
@@ -238,6 +239,7 @@ const App = () => {
     </UserProvider>
     </MemberContextProvider>
     </ProjectContextProvider>
+    </SharedContextProvider>
   );
 };
 

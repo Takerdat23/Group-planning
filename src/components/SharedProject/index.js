@@ -5,9 +5,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {MemberIndicator, saveMembersToStorage, getMemberByNameFromStorage, getRandomColor } from './utils';
 import {useMembers} from '../../server/context'; 
 import styles from './styles'
-import {useProjectsCount} from "../../server/context.js"; 
+import { useProjectsCount } from "../../server/context.js"; 
 import { addProject, addNewMember } from '../../server/AuthService.js';
 import { useUser } from '../../server/context';
+import { useShared } from '../../server/context';
+import socket from '../../server/socket.js';
 
 
 
@@ -26,8 +28,9 @@ const getRelativeTime = (date) => {
 };
 
 const SharedProjectsScreen = ({ navigation }) => {
-  const { user, setUser, userData, setUserData,
-          sharedProjects, setSharedProjects} = useUser()
+  const { user, setUser, userData, setUserData} = useUser()
+  const { sharedProjects, setSharedProjects } = useShared()
+  const [projects, setProjects] = useState([])
   const [modalVisible, setModalVisible] = useState(false);
   const [newMemberName, setNewMemberName] = useState('');
   const [members, setMembers] = useState([]);
@@ -35,9 +38,34 @@ const SharedProjectsScreen = ({ navigation }) => {
   const {Memberlist, setMemberlist} = useMembers();
   const {projectData,  updateCount} = useProjectsCount(); 
 
-  // useEffect(() => {
-  //   console.log(sharedProjects)
-  // }, [sharedProjects])
+  useEffect(() => {
+    setProjects(sharedProjects)
+  }, [sharedProjects])
+
+  useEffect(() => {
+    projectData.Shared_Projects = projects.length
+    updateCount(projectData)
+  }, [projects])
+
+  useEffect(() => {
+    socket.on("project log", (message, data) => {
+      if(message == "Add project successful") {
+        setSharedProjects([...sharedProjects, data])
+      }
+      else if (message == "Add member successful") {
+        console.log(1)
+        console.log(sharedProjects)
+        setSharedProjects(sharedProjects.map(project => {
+          console.log(project)
+          if(project.id == data.project.id)
+            project.members.push(data.member)
+          return project
+        }))
+      }
+      else
+        console.log(message)
+    })
+  }, [])
 
   const openAddMemberModal = (project) => {
     setSelectedProject(project)
@@ -52,48 +80,33 @@ const SharedProjectsScreen = ({ navigation }) => {
     }
   };
 
+
+
   const addMember = async (project, newMemberName) => {
-    const addMemberPromise = addNewMember(project.id, userData.email, newMemberName)
-    addMemberPromise.catch((message) => {
-      console.log(message)
-    })
+    addNewMember(project.id, userData.email, newMemberName)
   };
 
 
-  const handleNewProjects = (newProject) => {
-    const projectPromise = addProject(newProject)
-    projectPromise.then(
-      (projectData) => {
-        console.log("add new project")
-        setSharedProjects([...sharedProjects, projectData]);
-      }, 
-      (message) => {
-        console.log(message)
-      }
-    ) 
-  };
-
+  
   const handleUpdateProjects = (id, updatedProject) => {
- 
-    
     setProjects(projects => { 
       return projects.map(proj => {
-      
+        
         if (proj.id === id) {
           return updatedProject;
         }
-       
+        
         return proj;
       });
     });
   };
 
-
   const handleNewProject = () => {
     navigation.navigate('NewProject', {
-      onProjectSubmit: handleNewProjects,
+      onProjectSubmit: (newProject) => {
+        addProject(newProject)
+      },
     });
-   
   };
 
   const handleDeleteProject = (Project_to_delete_id) => {
@@ -140,7 +153,7 @@ const SharedProjectsScreen = ({ navigation }) => {
         <TouchableOpacity
             style={styles.centeredView}
             activeOpacity={1}
-            onPressOut={() =>  setModalVisible(!modalVisible)}
+            onPressOut={() => setModalVisible(!modalVisible)}
           >
      
           <View style={styles.modalView}>

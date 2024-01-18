@@ -12,10 +12,6 @@ socket.on('handshake', (word) => {
   console.log(word);
 });
 
-socket.on("project log", (data) => {
-  console.log(data)
-})
-
 socket.on("disconnect", (reason) => {
   console.log(reason)
   console.log("disconnect from server")
@@ -108,21 +104,6 @@ export function addProject(projectData) {
     return new Promise.reject("Please check internet connection")
 
   socket.emit("add project", projectData);
-  const projectPromise = new Promise((resolve, reject) => {
-    socket.on("project log", (message, data) => {
-      if(message == "Add project successful")
-        resolve(data)
-      else
-        reject(message)
-      socket.off("project log")
-    })
-  })
-
-  const timeOut = new Promise((resolve, reject) => {
-    setTimeout(reject, 3000, "Server doesn't response, please try again")
-  })
-
-  return Promise.race([projectPromise, timeOut])
 }
 
 export function addNewMember(projectID, master, member) {
@@ -130,21 +111,6 @@ export function addNewMember(projectID, master, member) {
     return new Promise.reject("Please check internet connection")
 
   socket.emit("add member", projectID, master, member);
-  const projectPromise = new Promise((resolve, reject) => {
-    socket.on("project log", (message, data) => {
-      if(message == "Add project successful")
-        resolve(data)
-      else
-        reject(message)
-      socket.off("project log")
-    })
-  })
-
-  const timeOut = new Promise((resolve, reject) => {
-    setTimeout(reject, 3000, "Server doesn't response, please try again")
-  })
-
-  return Promise.race([projectPromise, timeOut])
 }
 
 export const getProjects = () => {
