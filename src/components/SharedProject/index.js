@@ -163,7 +163,7 @@ const SharedProjectsScreen = ({ navigation }) => {
         >
           {/* Plus button to add member */}
        
-          <View style={[styles.projectIcon, { backgroundColor: getRandomColor() }]} />
+          <View style={[styles.projectIcon, { backgroundColor: project.color }]} />
           <View style={styles.projectDetails}>
             <Text style={styles.projectTitle}>{project.title}</Text>
             <Text style={styles.projectTimestamp}>{getRelativeTime(new Date(project.createdAt))}</Text>
@@ -172,12 +172,12 @@ const SharedProjectsScreen = ({ navigation }) => {
           </View>
            {/* Add this line where you want the member indicators to appear */}
           <MemberIndicator members={GetMemberPerProject(project)} />
-          <TouchableOpacity
+          {checkMaster(project) && <TouchableOpacity
               style={styles.addMemberButton}
               onPress={() => openAddMemberModal(project)}
             >
               <Ionicons name="person-add-outline" size={28} ></Ionicons>
-            </TouchableOpacity>
+            </TouchableOpacity>}
 
           
 
