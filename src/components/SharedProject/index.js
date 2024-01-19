@@ -8,7 +8,7 @@ import { useProjectsCount } from "../../server/context.js";
 import { addProject, addNewMember, getProjects } from '../../server/AuthService.js';
 import { useUser } from '../../server/context';
 import { useShared } from '../../server/context';
-import socket from '../../server/socket.js';
+import socket, { uEmail } from '../../server/socket.js';
 import { ttuser } from '../../server/socket.js';
 import { effect, signal } from '@preact/signals-react';
 
@@ -106,6 +106,10 @@ const SharedProjectsScreen = ({ navigation }) => {
     }); 
    
   };
+
+  const checkMaster = (project) => {
+    return user == project.master
+  }
 
   const GetMemberPerProject = (project) => { 
     const memberList = []; 
