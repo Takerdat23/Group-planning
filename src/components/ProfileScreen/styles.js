@@ -61,8 +61,10 @@ const styles = StyleSheet.create({
   manageAccount: {
     paddingVertical: 15,
     alignItems: 'center',
+    marginHorizontal: 20,
     backgroundColor: '#F67171',
     marginVertical: 150,
+    borderRadius: 10,
   },
   manageAccountText: {
     fontSize: 18,
@@ -74,6 +76,27 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderTopWidth: 1,
     borderTopColor: '#EAEAEA',
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5
   },
 });
 
