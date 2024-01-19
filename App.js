@@ -1,9 +1,8 @@
-import React,  { useState, useEffect, useMemo } from 'react';
+import React,  { useState, useContext, useMemo } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
-
 
 // Import your screens
 import LoginScreen from './src/components/LoginScreen/index.js';
@@ -17,7 +16,7 @@ import SharedProjectsScreen from './src/components/SharedProject/index.js'
 import SharedTaskScreen from './src/components/SharedTask/index.js'
 import MemberScreen from './src/components/MembersScreen/index.js'
 import AuthContext from './src/server/AuthService.js';
-import {UserProvider} from './src/server/context.js';
+import {UserProvider, SharedContext} from './src/server/context.js';
 import {MemberContextProvider, ProjectContextProvider, SharedContextProvider} from  './src/server/context.js'; 
 
 
@@ -177,6 +176,7 @@ const getTabBarVisibility = (route) => {
   }
   return 'flex';
 };
+
 // Main component
 const App = () => {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -190,7 +190,6 @@ const App = () => {
 
   
   return (
-    <SharedContextProvider>
     <ProjectContextProvider>
     <MemberContextProvider>
     <UserProvider>
@@ -239,9 +238,7 @@ const App = () => {
     </UserProvider>
     </MemberContextProvider>
     </ProjectContextProvider>
-    </SharedContextProvider>
   );
 };
-
 
 export default App;

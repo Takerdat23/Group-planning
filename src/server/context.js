@@ -101,18 +101,16 @@ export const useProjectsCount = () => {
   return context;
 };
 
-const SharedContext = createContext([]); 
+export const SharedContext = createContext([]); 
 
 export const SharedContextProvider = ({ children }) => {
-  const [sharedProjects, setSharedProjects] = useState([])
+  const [Memberlist, setMemberlist] = useState([]);
   return (
     <SharedContext.Provider value={{ sharedProjects, setSharedProjects }}>
       {children}
     </SharedContext.Provider>
   );
 };
-
-
 
 export const useShared = () => {
   const context = useContext(SharedContext);

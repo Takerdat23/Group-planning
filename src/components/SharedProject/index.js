@@ -1,17 +1,16 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Image, Modal, TextInput , Button} from 'react-native';
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {MemberIndicator, saveMembersToStorage, getMemberByNameFromStorage, getRandomColor } from './utils';
 import {useMembers} from '../../server/context'; 
 import styles from './styles'
 import { useProjectsCount } from "../../server/context.js"; 
-import { addProject, addNewMember } from '../../server/AuthService.js';
+import { addProject, addNewMember, getProjects } from '../../server/AuthService.js';
 import { useUser } from '../../server/context';
 import { useShared } from '../../server/context';
-import socket from '../../server/socket.js';
-
-
+import socket, { uEmail } from '../../server/socket.js';
+import { ttuser } from '../../server/socket.js';
+import { effect, signal } from '@preact/signals-react';
 
 
 const getRelativeTime = (date) => {
@@ -29,45 +28,22 @@ const getRelativeTime = (date) => {
 
 const SharedProjectsScreen = ({ navigation }) => {
   const { user, setUser, userData, setUserData} = useUser()
-  const { sharedProjects, setSharedProjects } = useShared()
   const [projects, setProjects] = useState([])
   const [modalVisible, setModalVisible] = useState(false);
   const [newMemberName, setNewMemberName] = useState('');
   const [members, setMembers] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null);
   const {Memberlist, setMemberlist} = useMembers();
-  const {projectData,  updateCount} = useProjectsCount(); 
-  const {user , setUser} = useUser(); 
-
+  const {projectData,  updateCount} = useProjectsCount();
 
   useEffect(() => {
-    setProjects(sharedProjects)
-  }, [sharedProjects])
-
-  useEffect(() => {
+    setProjects(ttuser.value)
+  }, [])
+  
+  effect(() => {
     projectData.Shared_Projects = projects.length
     updateCount(projectData)
   }, [projects])
-
-  useEffect(() => {
-    socket.on("project log", (message, data) => {
-      if(message == "Add project successful") {
-        setSharedProjects([...sharedProjects, data])
-      }
-      else if (message == "Add member successful") {
-        console.log(1)
-        console.log(sharedProjects)
-        setSharedProjects(sharedProjects.map(project => {
-          console.log(project)
-          if(project.id == data.project.id)
-            project.members.push(data.member)
-          return project
-        }))
-      }
-      else
-        console.log(message)
-    })
-  }, [])
 
   const openAddMemberModal = (project) => {
     setSelectedProject(project)
@@ -81,8 +57,6 @@ const SharedProjectsScreen = ({ navigation }) => {
       setModalVisible(false);
     }
   };
-
-
 
   const addMember = async (project, newMemberName) => {
     addNewMember(project.id, userData.email, newMemberName)
@@ -106,7 +80,13 @@ const SharedProjectsScreen = ({ navigation }) => {
   const handleNewProject = () => {
     navigation.navigate('NewProject', {
       onProjectSubmit: (newProject) => {
-        addProject(newProject)
+        const addPromise = addProject(newProject)
+        addPromise.then((data) => {
+          ttuser.value = [...ttuser.value, data]
+          setProjects(ttuser.value)
+        }, (message) => {
+          console.log(message)
+        })
       },
     });
   };
@@ -126,6 +106,10 @@ const SharedProjectsScreen = ({ navigation }) => {
     }); 
    
   };
+
+  const checkMaster = (project) => {
+    return user == project.master
+  }
 
   const GetMemberPerProject = (project) => { 
     const memberList = []; 
@@ -173,8 +157,8 @@ const SharedProjectsScreen = ({ navigation }) => {
    
         </TouchableOpacity>
       </Modal>
-        <Text style={styles.projectCount}>You have {sharedProjects.length} projects</Text>
-        {sharedProjects.map((project, index) => (
+        <Text style={styles.projectCount}>You have {projects.length} projects</Text>
+        {projects.map((project, index) => (
         <TouchableOpacity 
           key={project.id} 
           style={styles.projectCard} 

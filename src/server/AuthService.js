@@ -1,5 +1,6 @@
 import React from 'react';
 import socket from './socket'; 
+import { ttuser, uEmail } from './socket';
 
 const AuthContext = React.createContext({
   login: () => {loggedIn = true;},
@@ -15,6 +16,23 @@ socket.on('handshake', (word) => {
 socket.on("disconnect", (reason) => {
   console.log(reason)
   console.log("disconnect from server")
+})
+
+socket.on("project change", (message) => {
+  if(message == "Project change successful") {
+    socket.emit("get projects", uEmail.value)
+    socket.on("shared projects", (message, shPrjs) => {
+      if(message == "True") {
+        ttuser.value = shPrjs
+        console.log(ttuser.value.length)
+      }
+      else
+        console.log(message)
+      socket.off("get projects")
+    })
+  }
+  else
+    console.log(message)
 })
 
 export function signup(username, email, password) {
@@ -104,6 +122,21 @@ export function addProject(projectData) {
     return new Promise.reject("Please check internet connection")
 
   socket.emit("add project", projectData);
+  const addPromise =  new Promise((resolve, reject) => {
+    socket.on("add project log", (message, data) => {
+      if(message == "Add project successful")
+        resolve(data)
+      else
+        reject(message)
+      socket.off("add project log")
+    });
+  })
+
+  const timeOut = new Promise((resolve, reject) => {
+    setTimeout(reject, 3000, "Server doesn't response, please try again")
+  })
+
+  return Promise.race([addPromise, timeOut])
 }
 
 export function addNewMember(projectID, master, member) {
@@ -113,25 +146,26 @@ export function addNewMember(projectID, master, member) {
   socket.emit("add member", projectID, master, member);
 }
 
-export const getProjects = () => {
-  return new Promise((resolve, reject) => {
-    if (!socket) {
-      console.warn("Socket not connected");
-      reject("Socket not connected");
-      return;
-    }
-    socket.emit('getProject');
-    socket.on('Projects', (projects) => {
-      //console.log(projects);
-      resolve(projects); // Resolve the promise with the received projects
-    });
+export const getProjects = (email) => {
+  if(!socket.connected)
+    return new Promise.reject("Please check internet connection")
 
-    // Listen for errors
-    socket.on('error', (error) => {
-      console.error("Socket error:", error);
-      reject(error); // Reject the promise if there's an error
+  socket.emit("get projects", email);
+  const getPromise =  new Promise((resolve, reject) => {
+    socket.on("get project log", (message, data) => {
+      if(message == "Get project successful")
+        resolve(data)
+      else
+        reject(message)
+      socket.off("get project log")
     });
-  });
+  })
+
+  const timeOut = new Promise((resolve, reject) => {
+    setTimeout(reject, 3000, "Server doesn't response, please try again")
+  })
+
+  return Promise.race([getPromise, timeOut])
 };
 
 export const deleteProject = (id) => {

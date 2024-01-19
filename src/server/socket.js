@@ -1,4 +1,8 @@
 import io from 'socket.io-client';
+import { signal, effect } from '@preact/signals-react';
+
+export const ttuser = signal([])
+export const uEmail = signal("")
 
 let socket = null
 if(!socket || !socket.connected) {

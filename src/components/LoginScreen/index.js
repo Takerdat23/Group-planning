@@ -5,7 +5,7 @@ import { login } from '../../server/AuthService.js';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AuthContext from '../../server/AuthService.js'; 
 import { useShared, useUser } from '../../server/context.js'; 
-import { usedShared } from "../../server/context.js"
+import { ttuser, uEmail } from '../../server/socket.js';
 
 
 
@@ -61,7 +61,9 @@ const LoginScreen = ({ navigation }) => {
             name: data.name,
             email: data.email,
           })
-          setSharedProjects(data.projects)
+          uEmail.value = data.email
+          ttuser.value = data.projects
+          console.log(uEmail, ttuser.value.length)
           setLoading(false);
 
           navigation.navigate('Shared');
