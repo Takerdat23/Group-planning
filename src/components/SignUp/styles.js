@@ -37,20 +37,23 @@ const styles = StyleSheet.create({
       marginTop: 20,
     },
     buttonOutline: {
+      width: "auto",
       borderWidth: 1,
       borderColor: '#01a2cb',
       borderRadius: 15,
       padding: 15,
-      marginRight: 10,
+   
     },
     buttonOutlineText: {
       color: '#01a2cb',
+      margin: 'center',
     },
     button: {
       backgroundColor: '#01a2cb',
       borderRadius: 15,
       padding: 15,
       flexGrow: 1,
+      marginBottom: 10
     },
     buttonText: {
       color: '#ffffff',

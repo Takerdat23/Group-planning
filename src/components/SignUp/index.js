@@ -29,9 +29,10 @@ const SignUpScreen = ({ navigation }) => {
       })
   };
 
-  const handleSignIn = () => {
-    navigation.navigate('ProfileScreen'); 
-  };
+
+  const handleCancle =() => { 
+    navigation.goBack()
+  }
 
   return (
     <View style={styles.container}>
@@ -69,21 +70,21 @@ const SignUpScreen = ({ navigation }) => {
       <Text style={styles.hintText}>Provide at least 6 characters</Text>
 
       <View style={styles.buttonRow}>
-        <TouchableOpacity style={styles.buttonOutline} onPress={() => {}}>
-          <Text style={styles.buttonOutlineText}>Cancel</Text>
-        </TouchableOpacity>
+        
         <TouchableOpacity style={styles.button} onPress={handleSignUp}>
           <Text style={styles.buttonText}>Sign Up</Text>
         </TouchableOpacity>
         
       </View>
+
+      <TouchableOpacity style={styles.buttonOutline} onPress={handleCancle}>
+          <Text style={styles.buttonOutlineText}>Cancel</Text>
+        </TouchableOpacity>
       {loading && <ActivityIndicator size="large" color="#F82727" />}
       <Text style={styles.errorText}>{error}</Text>
 
       <Text style={styles.signInText}>Already have an account?</Text>
-      <TouchableOpacity style={styles.signInButton} onPress={handleSignIn}>
-        <Text style={styles.signInButtonText}>Sign In</Text>
-      </TouchableOpacity>
+     
     </View>
   );
 };

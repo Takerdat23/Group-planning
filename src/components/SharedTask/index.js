@@ -248,7 +248,7 @@ import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry.js';
   //Update task status section 
     const changeTaskStatus = (key, newStatus) => {
       const updatedTasks = tasks.map(task => {
-        if (task.key === key) {
+        if (task.id === key) {
           task.status = newStatus;
           updateTask(key, task);
           return task;
