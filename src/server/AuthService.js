@@ -221,7 +221,7 @@ export const addTask = (taskData, projectID) => {
   return Promise.race([addPromise, timeOut])
 }
 
-export const getTask = (projectID) => {
+export const getTask = async (projectID) => {
   socket.emit('get task', projectID);
   const getPromise =  new Promise((resolve, reject) => {
     socket.on("return task log", (message, data) => {

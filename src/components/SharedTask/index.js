@@ -24,8 +24,11 @@ import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry.js';
     const {user , setUser} = useUser(); 
     const {Memberlist, setMemberlist} = useMembers();
 
+
+   
+
     useEffect(() => {
-      const gPro = getTask(project.id)
+      const gPro =  getTask(project.id)
       gPro.then((ts) => {
         setTasks(ts)
         console.log(ts)
@@ -246,24 +249,27 @@ import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry.js';
 
     
   //Update task status section 
-    const changeTaskStatus = (key, newStatus) => {
-      const updatedTasks = tasks.map(task => {
-        if (task.id === key) {
-          task.status = newStatus;
-          updateTask(key, task);
-          return task;
-          //return { ...task, status: newStatus };
-        }
-        return task;
-      });
-      console.log(updatedTasks);
-      setTasks(updatedTasks);
-   
-      setModalVisible(false);
-    };
+  const changeTaskStatus = (key, newStatus) => {
+    console.log(tasks);
+  
+    const updatedTasks = tasks.map(task => {
+      if (task.id === key) {
+        
+        const updatedTask = { ...task, status: newStatus }; 
+        updateTask(key, updatedTask); 
+        return updatedTask; 
+      }
+      return task; 
+    });
+  
+    console.log(updatedTasks);
+    setTasks(updatedTasks); // Assuming setTasks is a function that updates the state
+  
+    setModalVisible(false); // Assuming this is a function to handle UI changes
+  };
   
     const openModal = (task) => {
-      setEditingTaskKey(task.key);
+      setEditingTaskKey(task.id);
       setSelectedStatus(task.status);
       setModalVisible(true);
     };
@@ -423,11 +429,9 @@ import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry.js';
           <View style={styles.taskCard}>
             <View style={{ flex: 1, justifyContent: 'center' }}>
               <Text style={styles.taskText}>{item.description}</Text>
-              <Text style={styles.assignedMemberText}>{"Asignment: "+ item.assignedTo}</Text>
+              <Text style={styles.assignedMemberText}>{item.description}</Text>
 
-              <TouchableOpacity onPress={() => handleAssignmentPress(item)}>
-               <Ionicons name="person-add" size={24} ></Ionicons>
-              </TouchableOpacity>
+            
             </View>
             <TouchableOpacity onPress={() => openModal(item)}>
               <Text style={[styles.taskStatus, getStatusStyle(item.status)]}>

@@ -71,7 +71,7 @@ const SharedProjectsScreen = ({ navigation }) => {
     navigation.setOptions({
       headerRight: () => (( 
         <View>
-        <TouchableOpacity onPress={console.log("pressed")}>
+        <TouchableOpacity onPress={handleReload}>
           <Ionicons
             name="refresh"
             size={30}
@@ -88,6 +88,10 @@ const SharedProjectsScreen = ({ navigation }) => {
 
     });
   }, [navigation]);
+
+  const handleReload =() => { 
+
+  }
 
   const openAddMemberModal = (project) => {
     setSelectedProject(project)
@@ -110,6 +114,7 @@ const SharedProjectsScreen = ({ navigation }) => {
       console.log(message)
     })
   };
+
 
 
   
