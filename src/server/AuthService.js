@@ -144,6 +144,22 @@ export function addNewMember(projectID, master, member) {
     return new Promise.reject("Please check internet connection")
 
   socket.emit("add member", projectID, master, member);
+
+  const memberPromise =  new Promise((resolve, reject) => {
+    socket.on("add member log", (message) => {
+      if(message == "Add project successful")
+        resolve(message)
+      else
+        reject(message)
+      socket.off("add member log")
+    });
+  })
+
+  const timeOut = new Promise((resolve, reject) => {
+    setTimeout(reject, 5000, "Server doesn't response, please try again")
+  })
+
+  return Promise.race([memberPromise, timeOut])
 }
 
 export const getProjects = (email) => {
@@ -181,37 +197,47 @@ export const deleteProject = (id) => {
 }
 
 //Task
-export const addTask = (taskName) => {
+export const addTask = (taskData, projectID) => {
   if (!socket) {
     console.warn("Socket not connected");
     return;
   }
-  console.log(taskName);
-  socket.emit('newTask', taskName);
-  socket.on('serverLog', (text) => {
-    console.log(text);
-  });
+  
+  socket.emit("add task", taskData, projectID)
+  const addPromise = new Promise((resolve, reject) => {
+    socket.on("add task log", (message) => {
+      if(message == "Add task successful")
+        resolve(message)
+      else
+        reject(message)
+      socket.off("add task log")
+    });
+  })
+
+  const timeOut = new Promise((resolve, reject) => {
+    setTimeout(reject, 3000, "Server doesn't response, please try again")
+  })
+
+  return Promise.race([addPromise, timeOut])
 }
 
-export const getTask = () => {
-  return new Promise((resolve, reject) => {
-    if (!socket) {
-      console.warn("Socket not connected");
-      reject("Socket not connected");
-      return;
-    }
-    socket.emit('getTask');
-    socket.on('Tasks', (tasks) => {
-      console.log(tasks);
-      resolve(tasks); // Resolve the promise with the received tasks
+export const getTask = (projectID) => {
+  socket.emit('get task', projectID);
+  const getPromise =  new Promise((resolve, reject) => {
+    socket.on("return task log", (message, data) => {
+      if(message == "Get task successful")
+        resolve(data)
+      else
+        reject(message)
+      socket.off("return task log")
     });
+  })
 
-    // Listen for errors
-    socket.on('error', (error) => {
-      console.error("Socket error:", error);
-      reject(error); // Reject the promise if there's an error
-    });
-  });
+  const timeOut = new Promise((resolve, reject) => {
+    setTimeout(reject, 3000, "Server doesn't response, please try again")
+  })
+
+  return Promise.race([getPromise, timeOut])
 };
 
 export const deleteTask = (id) => {

@@ -6,8 +6,7 @@ import {useMembers} from '../../server/context';
 import styles from './styles'
 import { useProjectsCount } from "../../server/context.js"; 
 import { addProject, addNewMember, getProjects } from '../../server/AuthService.js';
-import { useUser } from '../../server/context';
-import { useShared } from '../../server/context';
+import { useUser, useShared } from '../../server/context';
 import socket, { uEmail } from '../../server/socket.js';
 import { ttuser } from '../../server/socket.js';
 import { effect, signal } from '@preact/signals-react';
@@ -28,7 +27,8 @@ const getRelativeTime = (date) => {
 
 const SharedProjectsScreen = ({ navigation }) => {
   const { user, setUser, userData, setUserData} = useUser()
-  const [projects, setProjects] = useState([])
+  const { sharedProjects, setSharedProjects } = useShared()
+  const [projects, setProjects] = useState(sharedProjects)
   const [modalVisible, setModalVisible] = useState(false);
   const [newMemberName, setNewMemberName] = useState('');
   const [members, setMembers] = useState([]);
@@ -37,13 +37,31 @@ const SharedProjectsScreen = ({ navigation }) => {
   const {projectData,  updateCount} = useProjectsCount();
 
   useEffect(() => {
-    setProjects(ttuser.value)
-  }, [])
+    setProjects(sharedProjects)
+  }, [sharedProjects])
   
   effect(() => {
     projectData.Shared_Projects = projects.length
     updateCount(projectData)
   }, [projects])
+
+  // navigation.setOptions({
+  //   headerRight: () => (( 
+  //       <View>
+  //       <TouchableOpacity onPress={console.log("pressed")}>
+  //         <Ionicons
+  //           name="refresh"
+  //           size={30}
+  //           color="black" 
+  //           style={{ marginRight: 10 }} // Provide some spacing
+  //         />
+  //       </TouchableOpacity>
+
+    
+  //       </View>
+  //       )
+  //     ),
+  // }, [navigation]);
 
   const openAddMemberModal = (project) => {
     setSelectedProject(project)
@@ -59,7 +77,12 @@ const SharedProjectsScreen = ({ navigation }) => {
   };
 
   const addMember = async (project, newMemberName) => {
-    addNewMember(project.id, userData.email, newMemberName)
+    const memPromise = addNewMember(project.id, userData.email, newMemberName)
+    memPromise.then((message) => {
+      console.log(message)
+    }, (message) => {
+      console.log(message)
+    })
   };
 
 
@@ -82,8 +105,7 @@ const SharedProjectsScreen = ({ navigation }) => {
       onProjectSubmit: (newProject) => {
         const addPromise = addProject(newProject)
         addPromise.then((data) => {
-          ttuser.value = [...ttuser.value, data]
-          setProjects(ttuser.value)
+          setSharedProjects([...sharedProjects, data])
         }, (message) => {
           console.log(message)
         })
@@ -114,11 +136,9 @@ const SharedProjectsScreen = ({ navigation }) => {
   const GetMemberPerProject = (project) => { 
     const memberList = []; 
     for(x in project.members){
-
-      const member = members.find(m => m.name === project.members[x]);
-  
-      memberList.push(member); 
+      memberList.push(x); 
     }
+    console.log(project.members)
     return memberList;
   };
 
@@ -175,7 +195,7 @@ const SharedProjectsScreen = ({ navigation }) => {
             {/* Plus button to add member */}
           </View>
            {/* Add this line where you want the member indicators to appear */}
-          <MemberIndicator members={GetMemberPerProject(project)} />
+          {/* <MemberIndicator members={GetMemberPerProject(project)} /> */}
           {checkMaster(project) && <TouchableOpacity
               style={styles.addMemberButton}
               onPress={() => openAddMemberModal(project)}

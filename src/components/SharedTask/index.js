@@ -25,8 +25,14 @@ import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry.js';
     const {Memberlist, setMemberlist} = useMembers();
 
     useEffect(() => {
-      // console.log(tasks)
-    }, [tasks])
+      const gPro = getTask(project.id)
+      gPro.then((ts) => {
+        setTasks(ts)
+        console.log(ts)
+      }, (error) => {
+        console.log(error)
+      })
+    }, [project])
     const changeSettings = () => { 
      
       if (Current_project.master == user){ 
@@ -77,16 +83,6 @@ import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry.js';
       setSettingModalVisible(true); 
     };
 
-  
-    useEffect(() => {
-      getTask().then((data) => {
-        setTasks(data);
-      });
-    }, []);
-  
-    // useEffect(() => {
-    //   storeTasks(tasks);
-    // }, [tasks]);
   
     const generateKeyWithTimestamp = () => {
       return new Date().getTime().toString();
@@ -193,14 +189,21 @@ import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry.js';
         status: 'To do' , 
         asigned_to : '', 
       };
-      addTask(newTask);
-      //setTasks([...tasks, newTask]);
-      //storeTasks([...tasks, newTask]); 
-      setNewTaskText('');
-      getTask().then((data) => {
-        setTasks(data);
-      });
+      const ap = addTask(newTask, project.id)
+      ap.then((message) => {
+        const gPro = getTask(project.id)
+        gPro.then((ts) => {
+          setTasks(ts)
+          console.log(ts)
+        }, (error) => {
+          console.log(error)
+        })
+      }, (message) => {
+        console.log(message)
+      })
+
       
+      setNewTaskText('')
       }
       else{
         Alert.alert(
@@ -419,8 +422,8 @@ import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry.js';
         renderItem={({ item }) => (
           <View style={styles.taskCard}>
             <View style={{ flex: 1, justifyContent: 'center' }}>
-              <Text style={styles.taskText}>{item.text}</Text>
-              <Text style={styles.assignedMemberText}>{"Asignment: "+ item.asigned_to}</Text>
+              <Text style={styles.taskText}>{item.description}</Text>
+              <Text style={styles.assignedMemberText}>{"Asignment: "+ item.assignedTo}</Text>
 
               <TouchableOpacity onPress={() => handleAssignmentPress(item)}>
                <Ionicons name="person-add" size={24} ></Ionicons>
@@ -431,12 +434,12 @@ import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry.js';
                 {item.status}
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleRemoveTask(item.key)}>
+            <TouchableOpacity onPress={() => handleRemoveTask(item.id)}>
               <FontAwesome name="trash-o" size={24} color="red" style={styles.trashIcon} />
             </TouchableOpacity>
           </View>
         )}
-        keyExtractor={(item) => item.key}
+        keyExtractor={(item) => item.id}
         />
         <View style={styles.footer}>
           <Text style={styles.completionText}>{DoneTasksCount}/{tasks.length} completed</Text>

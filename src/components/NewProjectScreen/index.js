@@ -3,9 +3,7 @@ import { StyleSheet, View, Text, TextInput, TouchableOpacity , Alert} from 'reac
 import { Ionicons } from '@expo/vector-icons';
 import styles from './styles.js'
 import AuthContext from '../../server/AuthService.js'; 
-import { useUser } from '../../server/context.js'; 
-import {newProject} from '../../server/AuthService.js';
-
+import { useUser } from '../../server/context.js';
 
 function getRandomColor() {
   const letters = '0123456789ABCDEF';
@@ -19,8 +17,8 @@ function getRandomColor() {
 const NewProjectScreen = ({route, navigation}) => {
     const [projectName, setProjectName] = useState('');
     const [projectDescription, setProjectDescription] = useState('');
-    const { onProjectSubmit} = route.params;
-    const { user } = useUser();
+    const { onProjectSubmit } = route.params;
+    const { user, setUser } = useUser();
   
   
     const generateKeyWithTimestamp = () => {
@@ -29,8 +27,11 @@ const NewProjectScreen = ({route, navigation}) => {
   
     const handleCreate = () => {
       if (projectName.length){
-      const newProjects = { 
-        id: generateKeyWithTimestamp(),
+  
+    
+    
+      const newProject = { 
+        id: generateKeyWithTimestamp() ,
         title: projectName, 
         createdAt: new Date(),
         completionStatus: '',
@@ -38,13 +39,10 @@ const NewProjectScreen = ({route, navigation}) => {
         Tasks: [], 
         members: [],
         master: user,
-        color: getRandomColor(), 
+        color: getRandomColor(),
       }
-      if(user){
-        newProject(newProjects);
-      }
-      console.log('Project Created:',newProjects);
-      onProjectSubmit(newProjects); 
+      console.log('Project Created:',newProject);
+      onProjectSubmit(newProject); 
       navigation.goBack();  
      }
       else{

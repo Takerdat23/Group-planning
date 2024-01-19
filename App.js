@@ -190,6 +190,7 @@ const App = () => {
 
   
   return (
+    <SharedContextProvider>
     <ProjectContextProvider>
     <MemberContextProvider>
     <UserProvider>
@@ -238,6 +239,7 @@ const App = () => {
     </UserProvider>
     </MemberContextProvider>
     </ProjectContextProvider>
+    </SharedContextProvider>
   );
 };
 

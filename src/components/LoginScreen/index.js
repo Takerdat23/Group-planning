@@ -61,9 +61,7 @@ const LoginScreen = ({ navigation }) => {
             name: data.name,
             email: data.email,
           })
-          uEmail.value = data.email
-          ttuser.value = data.projects
-          console.log(uEmail, ttuser.value.length)
+          setSharedProjects(data.projects)
           setLoading(false);
 
           navigation.navigate('Shared');

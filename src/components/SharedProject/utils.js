@@ -1,46 +1,6 @@
 // MemberIndicator.js
 import React from 'react';
 import { View, Text } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-
-
-  
-export const saveMembersToStorage = async (projects) => {
-    try {
-      // Extract member names from all projects
-      const allMembers = projects.reduce((acc, project) => {
-        project.members.forEach(member => {
-          // Check if member already saved to prevent duplicates
-          if (!acc.some(m => m.name === member)) {
-            acc.push({ name: member });
-          }
-        });
-        return acc;
-      }, []);
-  
-      // Save the members array to AsyncStorage
-      const membersString = JSON.stringify(allMembers);
-      await AsyncStorage.setItem('members', membersString);
-    } catch (e) {
-      console.error("Error saving members", e);
-    }
-  };
-
-  export const getMemberByNameFromStorage = async (memberName) => {
-    try {
-      const membersString = await AsyncStorage.getItem('members');
-      const members = membersString ? JSON.parse(membersString) : [];
-  
-      // Find the member by name
-      const member = members.find(m => m.name === memberName);
-  
-      return member; // This will be undefined if the member is not found
-    } catch (e) {
-      console.error("Error retrieving member", e);
-      return null; // Indicate an error occurred
-    }
-  };
 
 export const getRandomColor = () => {
     const letters = '0123456789ABCDEF';
@@ -50,7 +10,6 @@ export const getRandomColor = () => {
     }
     return color;
   };
-
 
 export const MemberIndicator = ({ members }) => {
     const getInitials = (name) => {
@@ -74,7 +33,7 @@ export const MemberIndicator = ({ members }) => {
             width: 30,
             height: 30,
             borderRadius: 15,
-            backgroundColor: member.memberColor,
+            backgroundColor: getRandomColor(),
             justifyContent: 'center',
             alignItems: 'center',
             marginLeft: index === 0 ? 0 : -10,
