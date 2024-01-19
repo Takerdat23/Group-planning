@@ -204,6 +204,58 @@ export const updateTask = (taskID, task) => {
   });
 }
 
+//Profile Image
+const getBlobFroUri = async (uri) => {
+  const blob = await new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.onload = function () {
+      resolve(xhr.response);
+    };
+    xhr.onerror = function (e) {
+      reject(new TypeError("Network request failed"));
+    };
+    xhr.responseType = "blob";
+    xhr.open("GET", uri, true);
+    xhr.send(null);
+  });
+
+  return blob;
+};
+
+export const uploadAva = async(file, id) => {
+  if (!socket) {
+    console.warn("Socket not connected");
+    return;
+  }
+  //console.log(file);
+  const fileBlob = await getBlobFroUri(file);
+  socket.emit('uploadAva', fileBlob, id);
+  socket.on('upload', (text) => {
+    console.log(text);
+  });
+}
+
+export const downloadAva = async(id) =>{
+  return new Promise((resolve, reject) => {
+    if (!socket) {
+      console.warn("Socket not connected");
+      reject("Socket not connected");
+      return;
+    }
+    socket.emit('downloadAva', id);
+    socket.on('download', (ava) => {
+      //console.log(ava);
+      resolve(ava); // Resolve the promise with the received tasks
+    });
+
+    // Listen for errors
+    socket.on('error', (error) => {
+      console.error("Socket error:", error);
+      reject(error); // Reject the promise if there's an error
+    });
+  });
+} 
+
 
 export const getSocket = () => {
   return socket; // Return the socket instance
