@@ -45,6 +45,32 @@ const SharedProjectsScreen = ({ navigation }) => {
     updateCount(projectData)
   }, [projects])
 
+
+  useEffect(() => {
+
+      
+     
+    navigation.setOptions({
+      headerRight: () => (( 
+        <View>
+        <TouchableOpacity onPress={console.log("pressed")}>
+          <Ionicons
+            name="refresh"
+            size={30}
+            color="black" 
+            style={{ marginRight: 10 }} // Provide some spacing
+          />
+        </TouchableOpacity>
+
+    
+        </View>
+        )
+      ),
+ 
+
+    });
+  }, [navigation]);
+
   const openAddMemberModal = (project) => {
     setSelectedProject(project)
     setModalVisible(true)
