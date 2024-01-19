@@ -41,7 +41,9 @@ import styles from './styles.js'
       setSettingModalVisible(true); 
     };
   
-  
+    const generateKeyWithTimestamp = () => {
+      return new Date().getTime().toString();
+    };
 
   
     useEffect(() => {
@@ -133,7 +135,7 @@ import styles from './styles.js'
     const addNewTask = () => {
       if(newTaskText.length){
         const newTask = {
-        key: '',
+        key: generateKeyWithTimestamp(),
         text: newTaskText,
         status: 'To do' 
       };
@@ -161,6 +163,7 @@ import styles from './styles.js'
     
   
     const changeTaskStatus = (key, newStatus) => {
+      console.log(tasks)
       const updatedTasks = tasks.map(task => {
         if (task.key === key) {
           return { ...task, status: newStatus };
