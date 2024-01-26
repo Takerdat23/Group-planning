@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
       borderBottomColor: '#eee',
     },
     taskText: {
-      fontSize: 16,
+      fontSize: 18,
       flex: 1, 
       marginRight: 10, 
     },
@@ -202,7 +202,8 @@ const styles = StyleSheet.create({
       borderRadius: 5,
       padding: 10,
       elevation: 2,
-      backgroundColor: "#2196F3"
+      backgroundColor: "#2196F3", 
+      marginBottom:10,
     },
     addtaskTextInput: {
       width: '100%',

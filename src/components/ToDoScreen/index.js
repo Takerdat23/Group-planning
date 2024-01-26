@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons'; 
 import {getStatusStyle, getRelativeTime} from './utils.js'
 import styles from './styles.js'
+import DateTimePicker from '@react-native-community/datetimepicker';
 
   const TaskScreen = ({route, navigation}) => {
     const [tasks, setTasks] = useState([]);
@@ -18,6 +19,17 @@ import styles from './styles.js'
     const {Project_id} = route.params; 
     const {Current_project} = route.params ; 
     const {onDeleteCall} = route.params; 
+
+    const [date, setDate] = useState(new Date());
+    const [showDatePicker, setShowDatePicker] = useState(false);
+    const [selectedDate, setselectedDate] =useState('');
+
+    const onChange = (event, selectedDate) => {
+      const currentDate = selectedDate || date;
+      setShowDatePicker(Platform.OS === 'ios');
+      setDate(currentDate);
+    };
+
   
     useEffect(() => {
      
@@ -134,16 +146,32 @@ import styles from './styles.js'
   
     const addNewTask = () => {
       if(newTaskText.length){
+
+        const year = date.getFullYear();
+        const month = date.getMonth() + 1; 
+        const day = date.getDate();
+
+
+        const deadline = day + "-" + month + "-" + year
+
+        setselectedDate(deadline)
+
+        
+
+
+        const newKey = generateKeyWithTimestamp(); 
         const newTask = {
-        key: generateKeyWithTimestamp(),
-        text: newTaskText,
-        status: 'To do' 
-      };
+          key: newKey,
+          text: newTaskText,
+          status: 'To do' , 
+          endDate: deadline, 
+          asigned_to : '', 
+        };
+
+
       setTasks([...tasks, newTask]);
       storeTasks([...tasks, newTask]); 
       setNewTaskText('');
-     
-      
       }
       else{
         Alert.alert(
@@ -158,6 +186,8 @@ import styles from './styles.js'
           ]
         );
       }
+
+        
       
     };
     
@@ -261,33 +291,49 @@ import styles from './styles.js'
           visible={newTaskModalVisible}
           onRequestClose={() => setNewTaskModalVisible(false)}
         >
-        <TouchableOpacity
+          <TouchableOpacity
             style={styles.centeredView}
             activeOpacity={1}
             onPressOut={() => setNewTaskModalVisible(false)}
           >
-          
-         
-            <View style={styles.AddtaskView}>
-              <TextInput
-                style={styles.addtaskTextInput}
-                placeholder="Enter your task here..."
-                value={newTaskText}
-                onChangeText={setNewTaskText}
+          <View style={styles.AddtaskView}>
+            <TextInput
+              style={styles.addtaskTextInput}
+              placeholder="Enter your task here..."
+              value={newTaskText}
+              onChangeText={setNewTaskText}
+            />
+
+            {showDatePicker && (
+              <DateTimePicker
+                testID="dateTimePicker"
+                value={date}
+                mode="date"
+                display="default"
+                onChange={onChange}
               />
-              <TouchableOpacity
-                style={styles.addTaskbutton}
-                onPress={() => {
-                  addNewTask();
-                  setNewTaskModalVisible(false);
-                }}
-              >
+            )}
+
+            <TouchableOpacity
+              style={styles.addTaskbutton}
+              onPress={() => {
+                addNewTask();
+                setNewTaskModalVisible(false);
+              }}
+            >
               <Text style={styles.textStyle}>Add Task</Text>
             </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.addTaskbutton}
+              onPress={() => setShowDatePicker(!showDatePicker)}
+            >
+              <Text style={styles.textStyle}>Pick end date</Text>
+            </TouchableOpacity>
           </View>
-       
         </TouchableOpacity>
-      </Modal>
+        </Modal>
+  
   
   {/*modal for settings button */}
         <Modal
@@ -320,6 +366,8 @@ import styles from './styles.js'
           renderItem={({ item }) => (
             <View style={styles.taskItem}>
               <Text style={styles.taskText}>{item.text}</Text>
+
+              <Text style={styles.taskText}> Deadline: {item.endDate} </Text>
   
               <TouchableOpacity onPress={() => openModal(item)}>
                 <Text style={[styles.taskStatus, getStatusStyle(item.status)]}>

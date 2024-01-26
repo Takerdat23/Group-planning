@@ -9,6 +9,8 @@ import styles from './styles.js'
 import { addTask, getTask, updateTask, deleteTask } from '../../server/AuthService.js';
 import { useIsFocused } from '@react-navigation/native';
 import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry.js';
+import DateTimePicker from '@react-native-community/datetimepicker';
+
 
   const SharedTaskScreen = ({route, navigation}) => {
     const [tasks, setTasks] = useState([]);
@@ -24,6 +26,15 @@ import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry.js';
     const {user , setUser} = useUser(); 
     const {Memberlist, setMemberlist} = useMembers();
 
+
+    const [date, setDate] = useState(new Date());
+    const [showDatePicker, setShowDatePicker] = useState(false);
+
+    const onChange = (event, selectedDate) => {
+      const currentDate = selectedDate || date;
+      setShowDatePicker(Platform.OS === 'ios');
+      setDate(currentDate);
+    };
 
    
 
@@ -190,8 +201,11 @@ import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry.js';
         key: newKey,
         text: newTaskText,
         status: 'To do' , 
+        endDate: date, 
         asigned_to : '', 
       };
+
+   
       const ap = addTask(newTask, project.id)
       ap.then((message) => {
         const gPro = getTask(project.id)
@@ -354,33 +368,49 @@ import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry.js';
           visible={newTaskModalVisible}
           onRequestClose={() => setNewTaskModalVisible(false)}
         >
-        <TouchableOpacity
+          <TouchableOpacity
             style={styles.centeredView}
             activeOpacity={1}
             onPressOut={() => setNewTaskModalVisible(false)}
           >
-          
-         
-            <View style={styles.AddtaskView}>
-              <TextInput
-                style={styles.addtaskTextInput}
-                placeholder="Enter your task here..."
-                value={newTaskText}
-                onChangeText={setNewTaskText}
+          <View style={styles.AddtaskView}>
+            <TextInput
+              style={styles.addtaskTextInput}
+              placeholder="Enter your task here..."
+              value={newTaskText}
+              onChangeText={setNewTaskText}
+            />
+
+            {showDatePicker && (
+              <DateTimePicker
+                testID="dateTimePicker"
+                value={date}
+                mode="date"
+                is24Hour={false}
+                display="default"
+                onChange={onChange}
               />
-              <TouchableOpacity
-                style={styles.addTaskbutton}
-                onPress={() => {
-                  addNewTask();
-                  setNewTaskModalVisible(false);
-                }}
-              >
+            )}
+
+            <TouchableOpacity
+              style={styles.addTaskbutton}
+              onPress={() => {
+                addNewTask();
+                setNewTaskModalVisible(false);
+              }}
+            >
               <Text style={styles.textStyle}>Add Task</Text>
             </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.addTaskbutton}
+              onPress={() => setShowDatePicker(!showDatePicker)}
+            >
+              <Text style={styles.textStyle}>Pick Date</Text>
+            </TouchableOpacity>
           </View>
-       
         </TouchableOpacity>
-      </Modal>
+        </Modal>
   
   {/*modal for settings button */}
         <Modal
